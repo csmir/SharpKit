@@ -1,90 +1,86 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace SharpKit;
 
-namespace SharpKit
+public static class LinqExtensions
 {
-    public static class LinqExtensions
+    extension<T>(IEnumerable<T> source)
     {
-        extension<T>(IEnumerable<T> source)
+        public bool Contains<TImpl>()
         {
-            public bool Contains<TImpl>()
+            foreach (var item in source)
             {
-                foreach (var item in source)
-                {
-                    if (item is TImpl)
-                        return true;
-                }
-
-                return false;
+                if (item is TImpl)
+                    return true;
             }
 
-            public bool Contains<TImpl>(Func<TImpl, bool> predicate)
+            return false;
+        }
+
+        public bool Contains<TImpl>(Func<TImpl, bool> predicate)
+        {
+            foreach (var item in source)
             {
-                foreach (var item in source)
-                {
-                    if (item is TImpl tImpl && predicate(tImpl))
-                        return true;
-                }
-                return false;
+                if (item is TImpl tImpl && predicate(tImpl))
+                    return true;
+            }
+            return false;
+        }
+
+        public TImpl? FirstOrDefault<TImpl>(TImpl? defaultValue = default)
+        {
+            foreach (var item in source)
+            {
+                if (item is TImpl tImpl)
+                    return tImpl;
             }
 
-            public TImpl? FirstOrDefault<TImpl>(TImpl? defaultValue = default)
-            {
-                foreach (var item in source)
-                {
-                    if (item is TImpl tImpl)
-                        return tImpl;
-                }
+            return defaultValue;
+        }
 
-                return defaultValue;
+        public TImpl? FirstOrDefault<TImpl>(Func<TImpl, bool> predicate, TImpl? defaultValue = default)
+        {
+            foreach (var item in source)
+            {
+                if (item is TImpl tImpl && (predicate == null || predicate(tImpl)))
+                    return tImpl;
             }
 
-            public TImpl? FirstOrDefault<TImpl>(Func<TImpl, bool> predicate, TImpl? defaultValue = default)
-            {
-                foreach (var item in source)
-                {
-                    if (item is TImpl tImpl && (predicate == null || predicate(tImpl)))
-                        return tImpl;
-                }
+            return defaultValue;
+        }
 
-                return defaultValue;
+        public TImpl? LastOrDefault<TImpl>(TImpl? defaultValue = default)
+        {
+            var last = defaultValue;
+
+            foreach (var item in source)
+            {
+                if (item is TImpl tImpl)
+                    last = tImpl;
             }
 
-            public TImpl? LastOrDefault<TImpl>(TImpl? defaultValue = default)
+            return last;
+        }
+
+        public TImpl? LastOrDefault<TImpl>(Func<TImpl, bool> predicate, TImpl? defaultValue = default)
+        {
+            var last = defaultValue;
+
+            foreach (var item in source)
             {
-                var last = defaultValue;
-
-                foreach (var item in source)
-                {
-                    if (item is TImpl tImpl)
-                        last = tImpl;
-                }
-
-                return last;
+                if (item is TImpl tImpl && (predicate == null || predicate(tImpl)))
+                    last = tImpl;
             }
 
-            public TImpl? LastOrDefault<TImpl>(Func<TImpl, bool> predicate, TImpl? defaultValue = default)
+            return last;
+        }
+
+        public IEnumerable<T> ForEach<TImpl>(Action<T> action)
+        {
+            foreach (var item in source)
             {
-                var last = defaultValue;
-
-                foreach (var item in source)
-                {
-                    if (item is TImpl tImpl && (predicate == null || predicate(tImpl)))
-                        last = tImpl;
-                }
-
-                return last;
+                action(item);
             }
 
-            public IEnumerable<T> ForEach<TImpl>(Action<T> action)
-            {
-                foreach (var item in source)
-                {
-                    action(item);
-                }
-
-                return source;
-            }
+            return source;
         }
     }
 }

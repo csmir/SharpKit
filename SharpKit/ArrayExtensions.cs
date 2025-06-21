@@ -1,32 +1,29 @@
-﻿using System;
+﻿namespace SharpKit;
 
-namespace SharpKit
+public static class ArrayExtensions
 {
-    public static class ArrayExtensions
+    extension(Array array)
     {
-        extension(Array array)
+        public static void Push<T>(ref T[] arr, T item)
         {
-            public static void Push<T>(ref T[] arr, T item)
-            {
-                var i = arr.Length;
+            var i = arr.Length;
 
-                Array.Resize(ref arr, arr.Length + 1);
+            Array.Resize(ref arr, arr.Length + 1);
 
-                arr[i] = item;
-            }
+            arr[i] = item;
+        }
 
-            public static void Push<T>(ref T[] arr, params T[] items)
-            {
-                if (items.Length == 0)
-                    return;
+        public static void Push<T>(ref T[] arr, params T[] items)
+        {
+            if (items.Length == 0)
+                return;
 
-                var i = arr.Length;
+            var i = arr.Length;
 
-                Array.Resize(ref arr, arr.Length + items.Length);
+            Array.Resize(ref arr, arr.Length + items.Length);
 
-                foreach (var component in items)
-                    arr[i++] = component;
-            }
+            foreach (var component in items)
+                arr[i++] = component;
         }
     }
 }
