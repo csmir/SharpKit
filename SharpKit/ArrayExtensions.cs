@@ -15,6 +15,8 @@ public static class ArrayExtensions
 
         public static void Push<T>(ref T[] arr, params T[] items)
         {
+            ArgumentNullException.ThrowIfNull(items, nameof(items));
+
             if (items.Length == 0)
                 return;
 

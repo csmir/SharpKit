@@ -1,4 +1,4 @@
-﻿namespace SharpKit.Services;
+﻿namespace SharpKit;
 
 public sealed class EmptyServiceProvider : IServiceProvider
 {
