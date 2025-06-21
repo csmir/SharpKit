@@ -82,5 +82,22 @@ public static class LinqExtensions
 
             return source;
         }
+
+        public IEnumerable<T> TakeReverseWhile(Func<T, bool> predicate, bool yieldReversed = false)
+        {
+            IEnumerable<T> Take()
+            {
+                foreach (var value in source.Reverse())
+                {
+                    if (!predicate(value))
+                        break;
+                    yield return value;
+                }
+            }
+
+            var result = Take();
+
+            return yieldReversed ? result : result.Reverse();
+        }
     }
 }
