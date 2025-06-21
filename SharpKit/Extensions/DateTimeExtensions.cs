@@ -38,7 +38,11 @@ public static class DateTimeExtensions
 
     extension(TimeSpan span)
     {
-        public static bool TryParseFuzzy(string input, out TimeSpan result)
+        public static bool TryParseFuzzy(string input,
+#if NET6_0_OR_GREATER 
+            [NotNullWhen(true)]
+#endif
+            out TimeSpan result)
         {
             result = default;
 

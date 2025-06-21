@@ -69,9 +69,25 @@ public static class ExceptionExtensions
         public static void ThrowIfNull(object? argument, string argumentExpression)
         {
             if (argument == null)
-            {
                 throw new ArgumentNullException(argumentExpression, $"Argument '{argumentExpression}' cannot be null.");
-            }
+        }
+#endif
+    }
+
+    extension(ArgumentOutOfRangeException ex)
+    {
+        // Polyfill for .NET versions prior to .NET 6.0
+#if !NET6_0_OR_GREATER
+        public static void ThrowIfOutOfRange(int value, int minValue, int maxValue, string argumentExpression)
+        {
+            if (value < minValue || value > maxValue)
+                throw new ArgumentOutOfRangeException(argumentExpression, value, $"Argument '{argumentExpression}' must be between {minValue} and {maxValue}.");
+        }
+
+        public static void ThrowIfNegative(int value, string argumentExpression)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(argumentExpression, value, $"Argument '{argumentExpression}' cannot be negative.");
         }
 #endif
     }

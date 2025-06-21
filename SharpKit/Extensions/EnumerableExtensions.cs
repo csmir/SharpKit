@@ -1,6 +1,6 @@
 ﻿namespace SharpKit;
 
-public static class LinqExtensions
+public static class EnumerableExtensions
 {
     extension<T>(IEnumerable<T> source)
     {
@@ -98,6 +98,18 @@ public static class LinqExtensions
             var result = Take();
 
             return yieldReversed ? result : result.Reverse();
+        }
+    }
+
+    extension(IEnumerable source)
+    {
+        public IEnumerable<T> OfType<T>()
+        {
+            foreach (var item in source)
+            {
+                if (item is T tItem)
+                    yield return tItem;
+            }
         }
     }
 }
