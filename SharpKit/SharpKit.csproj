@@ -1,13 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8</TargetFrameworks>
-		<LangVersion>preview</LangVersion>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<WarningsAsErrors>true</WarningsAsErrors>
-		<IsAotCompatible Condition="'$(TargetFramework)' == 'net8'">true</IsAotCompatible>
-		<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
+  <PropertyGroup Label="Compilation Options">
+
+	<!-- Base Options -->
+	<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+
+	<!-- Analysis Options -->
+	<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
+	<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	<AnalysisLevel>preview-all</AnalysisLevel>
+	<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
+	<WarningLevel>9999</WarningLevel>
+
+	<!-- Language Options -->
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>preview</LangVersion>
+	<Nullable>enable</Nullable>
+
   </PropertyGroup>
 
 </Project>
