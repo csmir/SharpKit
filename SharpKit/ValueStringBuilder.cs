@@ -44,7 +44,7 @@ internal ref struct ValueStringBuilder(Span<char> initialBuffer)
         if (_position + length > _span.Length)
             Grow(length);
 
-        span.CopyTo(_span.Slice(_position));
+        span.CopyTo(_span[_position..]);
 
         _position += length;
     }
