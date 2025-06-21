@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace SharpKit;
 
@@ -18,8 +13,8 @@ internal sealed class ColorComparer : IComparer<Color>
 
     private double GetCoding(Color color, int repetitions = 8)
     {
-        var (r, g, b) = ((float)color.R, (float)color.G, (float)color.B);
-        var lum = Math.Sqrt(_rTarget * r + _gTarget * g + _bTarget * b);
+        var (r, g, b) = (color.R, color.G, color.B);
+        var lum = Math.Sqrt((r * _rTarget) + (g * _gTarget) + (b * _bTarget));
         var (h, s, v) = color.ToHSV();
 
         h *= repetitions;

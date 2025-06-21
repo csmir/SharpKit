@@ -72,8 +72,8 @@ public static unsafe class Memory
         switch (alignment)
         {
             case >= 8: length /= 8; for (nuint i = 0; i < length; i++) ( (long*)ptr)[i] = 0; break;
-            case    4: length /= 4; for (nuint i = 0; i < length; i++) (  (int*)ptr)[i] = 0; break;
-            case    2: length /= 2; for (nuint i = 0; i < length; i++) ((short*)ptr)[i] = 0; break;
+               case 4: length /= 4; for (nuint i = 0; i < length; i++) (  (int*)ptr)[i] = 0; break;
+               case 2: length /= 2; for (nuint i = 0; i < length; i++) ((short*)ptr)[i] = 0; break;
               default:              for (nuint i = 0; i < length; i++) ( (byte*)ptr)[i] = 0; break;
         }
     }

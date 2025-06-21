@@ -15,7 +15,11 @@ public static class StructExtensions
 
         public string ToFormattedString()
         {
+#if NET6_0_OR_GREATER
+            var sb = new ValueStringBuilder(stackalloc char[64]);
+#else
             var sb = new StringBuilder();
+#endif
 
             if (span.Days > 0)
             {
