@@ -1,4 +1,4 @@
-﻿namespace SharpKit;
+﻿namespace SharpKit.Collections;
 
 public class Grouping<TKey, T> : IGrouping<TKey, T>
     where TKey : notnull

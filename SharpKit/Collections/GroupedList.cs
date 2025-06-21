@@ -1,4 +1,4 @@
-﻿namespace SharpKit;
+﻿namespace SharpKit.Commands;
 
 public class GroupedList<TKey, T> : List<T>, IGrouping<TKey, T>
     where TKey : notnull
