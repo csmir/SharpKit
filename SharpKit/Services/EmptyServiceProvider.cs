@@ -2,8 +2,5 @@
 
 public sealed class EmptyServiceProvider : IServiceProvider
 {
-    public object? GetService(Type serviceType)
-    {
-        return null;
-    }
+    public object? GetService(Type serviceType) => null;
 }
