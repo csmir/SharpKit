@@ -45,9 +45,7 @@ public static class PrimitiveExtensions
             foreach (var c in str)
             {
                 if (!char.IsLetterOrDigit(c))
-                {
                     return false;
-                }
             }
 
             return true;
