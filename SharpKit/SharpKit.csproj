@@ -2,22 +2,26 @@
 
   <PropertyGroup Label="Compilation Options">
 
-	<!-- Base Options -->
-	<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+		<!-- Base Options -->
+		<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
 
-	<!-- Analysis Options -->
-	<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
-	<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	<AnalysisLevel>preview-all</AnalysisLevel>
-	<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
-	<WarningLevel>9999</WarningLevel>
+		<!-- Analysis Options -->
+		<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<AnalysisLevel>preview-all</AnalysisLevel>
+		<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
+		<WarningLevel>9999</WarningLevel>
 
-	<!-- Language Options -->
-	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>preview</LangVersion>
-	<Nullable>enable</Nullable>
+		<!-- Language Options -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
 
   </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../.editorconfig" />
+	</ItemGroup>
 
 </Project>
