@@ -8,9 +8,7 @@
 		<!-- Analysis Options -->
 		<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<AnalysisLevel>preview-all</AnalysisLevel>
 		<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
-		<WarningLevel>9999</WarningLevel>
 
 		<!-- Language Options -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -21,7 +19,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Using Include="System.Collections"/>
+		<Using Include="System.Collections" />
 		<Using Include="System.Reflection" />
 		<Using Include="System.Runtime.CompilerServices" />
 	</ItemGroup>
