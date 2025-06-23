@@ -37,8 +37,7 @@ public static class EnumerableExtensions
 
             Array.Resize(ref arr, arr.Length + items.Length);
 
-            foreach (var component in items)
-                arr[i++] = component;
+            Array.Copy(items, 0, arr, i, items.Length);
         }
     }
 }

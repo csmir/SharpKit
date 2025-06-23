@@ -38,17 +38,17 @@ public static class PrimitiveExtensions
             return str;
         }
 
-        public bool IsAlphaNumeric()
+        public bool ContainsSymbols()
         {
             ArgumentException.ThrowIfNullOrEmpty(str, nameof(str));
 
             foreach (var c in str)
             {
                 if (!char.IsLetterOrDigit(c))
-                    return false;
+                    return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

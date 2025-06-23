@@ -10,7 +10,7 @@ namespace SharpKit;
 /// The stack-allocated buffer will be used until it overflows, at which point a larger array will be rented from <see cref="ArrayPool{T}.Shared"/> to minimize allocation.
 /// When <see cref="ToString"/> is called, the builder will return the rented array to the pool, destroying the builder automatically.
 /// </summary>
-internal ref struct ValueStringBuilder(Span<char> initialBuffer)
+public ref struct ValueStringBuilder(Span<char> initialBuffer)
 {
     private Span<char> _span = initialBuffer;
     private int _position;

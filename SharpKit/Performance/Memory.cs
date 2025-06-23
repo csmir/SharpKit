@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Toolkit;
+namespace SharpKit.Performance;
 
 public static unsafe class Memory
 {
