@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace SharpKit.Performance;
 
-public static unsafe partial class Intrinsics
+public static unsafe class Intrinsics
 {
     #region Constants
     internal const int
@@ -32,6 +32,8 @@ public static unsafe partial class Intrinsics
         public static readonly double[] Factorials;
     }
     #endregion
+
+    #region Arithmetic Operations
 
     #region Arithmetic(ReadOnlySpan<T> input, T value, Span<T> output)
 
@@ -858,6 +860,10 @@ public static unsafe partial class Intrinsics
     #endregion
 
     #endregion
+
+    #endregion Arithmetic
+
+    #region Bitwise Operations
 
     #region Bitwise(ReadOnlySpan<T> input, T mask, Span<T> output)
 
@@ -2061,6 +2067,172 @@ public static unsafe partial class Intrinsics
             else if    (Sse2.IsSupported) for (; i <= length - sq; i += sq)    Sse2.Store(@out + i,    Sse2.AndNot(   Sse2.LoadVector128(@in + i),    Sse2.LoadVector128(@maskPtr + i)));
 
             for (; i < length; i++) @out[i] = @in[i] &~ @maskPtr[i];
+        }
+    }
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #region Shift Operations
+
+    #region ShiftLeftLogical(ReadOnlySpan<T> input, T mask, Span<T> output)
+    public static void ShiftLeftLogical(ReadOnlySpan<int> input, [ConstantExpected] byte mask, Span<int> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (int* @out = output) fixed (int* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(@in + i), mask));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogical(    Avx.LoadVector256(@in + i), mask));
+            else if    (Sse2.IsSupported) for (; i <= length - sd; i += sd)    Sse2.Store(@out + i,    Sse2.ShiftLeftLogical(   Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] << mask;
+        }
+    }
+
+    public static void ShiftLeftLogical(ReadOnlySpan<uint> input, [ConstantExpected] byte mask, Span<uint> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (uint* @out = output) fixed (uint* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(@in + i), mask));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogical(    Avx.LoadVector256(@in + i), mask));
+            else if    (Sse2.IsSupported) for (; i <= length - sd; i += sd)    Sse2.Store(@out + i,    Sse2.ShiftLeftLogical(   Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] << mask;
+        }
+    }
+
+    public static void ShiftLeftLogical(ReadOnlySpan<long> input, [ConstantExpected] byte mask, Span<long> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (long* @out = output) fixed (long* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rq; i += rq) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(@in + i), mask));
+            else if    (Avx2.IsSupported) for (; i <= length - eq; i += eq)     Avx.Store(@out + i,    Avx2.ShiftLeftLogical(    Avx.LoadVector256(@in + i), mask));
+            else if    (Sse2.IsSupported) for (; i <= length - sq; i += sq)    Sse2.Store(@out + i,    Sse2.ShiftLeftLogical(   Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] << mask;
+        }
+    }
+
+    public static void ShiftLeftLogical(ReadOnlySpan<ulong> input, [ConstantExpected] byte mask, Span<ulong> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (ulong* @out = output) fixed (ulong* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rq; i += rq) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(@in + i), mask));
+            else if    (Avx2.IsSupported) for (; i <= length - eq; i += eq)     Avx.Store(@out + i,    Avx2.ShiftLeftLogical(    Avx.LoadVector256(@in + i), mask));
+            else if    (Sse2.IsSupported) for (; i <= length - sq; i += sq)    Sse2.Store(@out + i,    Sse2.ShiftLeftLogical(   Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] << mask;
+        }
+    }
+    #endregion
+
+    #region ShiftLeftLogicalVariable(ReadOnlySpan<T> input, ReadOnlySpan<T> mask, Span<T> output)
+    public static void ShiftLeftLogicalVariable(ReadOnlySpan<int> input, ReadOnlySpan<uint> mask, Span<int> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (uint* @maskPtr = mask) fixed (int* @out = output) fixed (int* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogicalVariable(    Avx.LoadVector256(@in + i),     Avx.LoadVector256(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] << (int)@maskPtr[i];
+        }
+    }
+
+    public static void ShiftLeftLogicalVariable(ReadOnlySpan<uint> input, ReadOnlySpan<uint> mask, Span<uint> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (uint* @maskPtr = mask) fixed (uint* @out = output) fixed (uint* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogicalVariable(    Avx.LoadVector256(@in + i),     Avx.LoadVector256(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] << (int)@maskPtr[i];
+        }
+    }
+
+    public static void ShiftLeftLogicalVariable(ReadOnlySpan<long> input, ReadOnlySpan<ulong> mask, Span<long> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (ulong* @maskPtr = mask) fixed (long* @out = output) fixed (long* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogicalVariable(    Avx.LoadVector256(@in + i),     Avx.LoadVector256(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] << (int)@maskPtr[i];
+        }
+    }
+
+    public static void ShiftLeftLogicalVariable(ReadOnlySpan<ulong> input, ReadOnlySpan<ulong> mask, Span<ulong> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (ulong* @maskPtr = mask) fixed (ulong* @out = output) fixed (ulong* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftLeftLogicalVariable(    Avx.LoadVector256(@in + i),     Avx.LoadVector256(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] << (int)@maskPtr[i];
+        }
+    }
+    #endregion
+
+    #region ShiftRightArithmetic(ReadOnlySpan<T> input, T mask, Span<T> output)
+    public static void ShiftRightArithmetic(ReadOnlySpan<short> input, [ConstantExpected] byte mask, Span<short> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (short* @out = output) fixed (short* @in = input)
+        {
+                 if (Avx2.IsSupported) for (; i <= length - ew; i += ew)  Avx.Store(@out + i, Avx2.ShiftRightArithmetic( Avx.LoadVector256(@in + i), mask));
+            else if (Sse2.IsSupported) for (; i <= length - sw; i += sw) Sse2.Store(@out + i, Sse2.ShiftRightArithmetic(Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = (short)(@in[i] >> mask);
+        }
+    }
+
+    public static void ShiftRightArithmetic(ReadOnlySpan<int> input, [ConstantExpected] byte mask, Span<int> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (int* @out = output) fixed (int* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftRightArithmetic(Avx512F.LoadVector512(@in + i), mask));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftRightArithmetic(    Avx.LoadVector256(@in + i), mask));
+            else if    (Sse2.IsSupported) for (; i <= length - sd; i += sd)    Sse2.Store(@out + i,    Sse2.ShiftRightArithmetic(   Sse2.LoadVector128(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] >> mask;
+        }
+    }
+
+    public static void ShiftRightArithmetic(ReadOnlySpan<long> input, [ConstantExpected] byte mask, Span<long> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (long* @out = output) fixed (long* @in = input)
+        {
+            if (Avx512F.IsSupported) for (; i <= length - rq; i += rq) Avx512F.Store(@out + i, Avx512F.ShiftRightArithmetic(Avx512F.LoadVector512(@in + i), mask));
+            for (; i < length; i++) @out[i] = @in[i] >> mask;
+        }
+    }
+    #endregion
+
+    #region ShiftRightArithmeticVariable(ReadOnlySpan<T> input, ReadOnlySpan<T> mask, Span<T> output)
+    public static void ShiftRightArithmeticVariable(ReadOnlySpan<int> input, ReadOnlySpan<uint> mask, Span<int> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (uint* @maskPtr = mask) fixed (int* @out = output) fixed (int* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rd; i += rd) Avx512F.Store(@out + i, Avx512F.ShiftRightArithmeticVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+            else if    (Avx2.IsSupported) for (; i <= length - ed; i += ed)     Avx.Store(@out + i,    Avx2.ShiftRightArithmeticVariable(    Avx.LoadVector256(@in + i),     Avx.LoadVector256(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] >> (int)@maskPtr[i];
+        }
+    }
+
+    public static void ShiftRightArithmeticVariable(ReadOnlySpan<long> input, ReadOnlySpan<ulong> mask, Span<long> output)
+    {
+        int length = input.Length, i = 0;
+        fixed (ulong* @maskPtr = mask) fixed (long* @out = output) fixed (long* @in = input)
+        {
+                 if (Avx512F.IsSupported) for (; i <= length - rq; i += rq) Avx512F.Store(@out + i, Avx512F.ShiftRightArithmeticVariable(Avx512F.LoadVector512(@in + i), Avx512F.LoadVector512(@maskPtr + i)));
+
+            for (; i < length; i++) @out[i] = @in[i] >> (int)@maskPtr[i];
         }
     }
     #endregion
