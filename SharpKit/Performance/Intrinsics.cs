@@ -7,11 +7,15 @@ namespace SharpKit.Performance;
 
 public static unsafe class Intrinsics
 {
-    internal const int v512x1 = 64, v256x1 = 32, v128x1 = 08, v512x2 = 32, v256x2 = 16, v128x2 = 06, v512x4 = 16, v256x4 = 08, v128x4 = 04, v512x8 = 08, v256x8 = 04, v128x8 = 02;
+    private const int v512x1 = 64, v256x1 = 32, v128x1 = 08, v512x2 = 32, v256x2 = 16, v128x2 = 06, v512x4 = 16, v256x4 = 08, v128x4 = 04, v512x8 = 08, v256x8 = 04, v128x8 = 02;
 
-    #region Arithmetic Operations
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static TTo BitCast<TFrom, TTo>(TFrom value) where TFrom : unmanaged where TTo : unmanaged => *(TTo*)(void*)&value;
 
-    #region Arithmetic(T* input, T value, T* output, int length)
+#if !NET6_0_OR_GREATER
+    // This attribute does nothing.
+    private class ConstantExpectedAttribute : Attribute;
+#endif
 
     #region Add(T* input, T value, T* output, int length)
     public static void Add(byte* input, [ConstantExpected] byte value, byte* output, int length)
@@ -261,6 +265,151 @@ public static unsafe class Intrinsics
     }
     #endregion
 
+    #region Add(T* input, T* values, T* output, int length)
+    public static void Add(byte* input, byte* values, byte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (byte)(input[i] + values[i]);
+    }
+
+    public static void Add(sbyte* input, sbyte* values, sbyte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (sbyte)(input[i] + values[i]);
+    }
+
+    public static void Add(short* input, short* values, short* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (short)(input[i] + values[i]);
+    }
+
+    public static void Add(ushort* input, ushort* values, ushort* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ushort)(input[i] + values[i]);
+    }
+
+    public static void Add(int* input, int* values, int* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+
+    public static void Add(uint* input, uint* values, uint* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+
+    public static void Add(long* input, long* values, long* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+
+    public static void Add(ulong* input, ulong* values, ulong* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+
+    public static void Add(float* input, float* values, float* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Add(Sse.LoadVector128(input + i), Sse.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+
+    public static void Add(double* input, double* values, double* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] + values[i];
+    }
+    #endregion
+
+
     #region AddSaturate(T* input, T value, T* output, int length)
     public static void AddSaturate(byte* input, [ConstantExpected] byte value, byte* output, int length)
     {
@@ -346,6 +495,61 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = (ushort)Math.Max(ushort.MaxValue, input[i] + value);
     }
     #endregion
+
+    #region AddSaturate(T* input, T* values, T* output, int length)
+    public static void AddSaturate(byte* input, byte* values, byte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (byte)Math.Max(byte.MaxValue, input[i] + values[i]);
+    }
+
+    public static void AddSaturate(sbyte* input, sbyte* values, sbyte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (sbyte)Math.Max(sbyte.MaxValue, input[i] + values[i]);
+    }
+
+    public static void AddSaturate(short* input, short* values, short* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (short)Math.Max(short.MaxValue, input[i] + values[i]);
+    }
+
+    public static void AddSaturate(ushort* input, ushort* values, ushort* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ushort)Math.Max(ushort.MaxValue, input[i] + values[i]);
+    }
+    #endregion
+
 
     #region Multiply(T* input, T value, T* output, int length)
     public static void Multiply(int* input, [ConstantExpected] int value, long* output, int length)
@@ -451,6 +655,67 @@ public static unsafe class Intrinsics
     }
     #endregion
 
+    #region Multiply(T* input, T* values, T* output, int length)
+    public static void Multiply(int* input, int* values, long* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (long)input[i] * values[i];
+    }
+
+    public static void Multiply(uint* input, uint* values, ulong* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Multiply(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ulong)input[i] * values[i];
+    }
+
+    public static void Multiply(float* input, float* values, float* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Multiply(Sse.LoadVector128(input + i), Sse.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] * values[i];
+    }
+
+    public static void Multiply(double* input, double* values, double* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Multiply(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] * values[i];
+    }
+    #endregion
+
+
     #region MultiplyLow(T* input, T value, T* output, int length)
     public static void MultiplyLow(int* input, [ConstantExpected] int value, int* output, int length)
     {
@@ -494,6 +759,35 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = (uint)((ulong)input[i] * value);
     }
     #endregion
+
+    #region MultiplyLow(T* input, T* values, T* output, int length)
+    public static void MultiplyLow(int* input, int* values, int* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (int)((long)input[i] * values[i]);
+    }
+
+    public static void MultiplyLow(uint* input, uint* values, uint* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (uint)((ulong)input[i] * values[i]);
+    }
+    #endregion
+
 
     #region Subtract(T* input, T value, T* output, int length)
     public static void Subtract(byte* input, [ConstantExpected] byte value, byte* output, int length)
@@ -743,296 +1037,6 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #endregion
-
-    #region Arithmetic(T* input, T* values, T* output, int length)
-
-    #region Add(T* input, T* values, T* output, int length)
-    public static void Add(byte* input, byte* values, byte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (byte)(input[i] + values[i]);
-    }
-
-    public static void Add(sbyte* input, sbyte* values, sbyte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (sbyte)(input[i] + values[i]);
-    }
-
-    public static void Add(short* input, short* values, short* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (short)(input[i] + values[i]);
-    }
-
-    public static void Add(ushort* input, ushort* values, ushort* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ushort)(input[i] + values[i]);
-    }
-
-    public static void Add(int* input, int* values, int* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-
-    public static void Add(uint* input, uint* values, uint* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-
-    public static void Add(long* input, long* values, long* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-
-    public static void Add(ulong* input, ulong* values, ulong* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-
-    public static void Add(float* input, float* values, float* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Add(Sse.LoadVector128(input + i), Sse.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-
-    public static void Add(double* input, double* values, double* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] + values[i];
-    }
-    #endregion
-
-    #region AddSaturate(T* input, T* values, T* output, int length)
-    public static void AddSaturate(byte* input, byte* values, byte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (byte)Math.Max(byte.MaxValue, input[i] + values[i]);
-    }
-
-    public static void AddSaturate(sbyte* input, sbyte* values, sbyte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (sbyte)Math.Max(sbyte.MaxValue, input[i] + values[i]);
-    }
-
-    public static void AddSaturate(short* input, short* values, short* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (short)Math.Max(short.MaxValue, input[i] + values[i]);
-    }
-
-    public static void AddSaturate(ushort* input, ushort* values, ushort* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ushort)Math.Max(ushort.MaxValue, input[i] + values[i]);
-    }
-    #endregion
-
-    #region Multiply(T* input, T* values, T* output, int length)
-    public static void Multiply(int* input, int* values, long* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (long)input[i] * values[i];
-    }
-
-    public static void Multiply(uint* input, uint* values, ulong* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Multiply(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ulong)input[i] * values[i];
-    }
-
-    public static void Multiply(float* input, float* values, float* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Multiply(Sse.LoadVector128(input + i), Sse.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] * values[i];
-    }
-
-    public static void Multiply(double* input, double* values, double* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Multiply(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] * values[i];
-    }
-    #endregion
-
-    #region MultiplyLow(T* input, T* values, T* output, int length)
-    public static void MultiplyLow(int* input, int* values, int* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (int)((long)input[i] * values[i]);
-    }
-
-    public static void MultiplyLow(uint* input, uint* values, uint* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (uint)((ulong)input[i] * values[i]);
-    }
-    #endregion
-
     #region Subtract(T* input, T* values, T* output, int length)
     public static void Subtract(byte* input, byte* values, byte* output, int length)
     {
@@ -1177,13 +1181,6 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #endregion
-
-    #endregion Arithmetic
-
-    #region Bitwise Operations
-
-    #region Bitwise(T* input, T mask, T* output, int length)
 
     #region And(T* input, T mask, T* output, int length)
     public static void And(byte* input, [ConstantExpected] byte mask, byte* output, int length)
@@ -1445,6 +1442,155 @@ public static unsafe class Intrinsics
     }
     #endregion
 
+    #region And(T* input, T* masks, T* output, int length)
+    public static void And(byte* input, byte* masks, byte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (byte)(input[i] & masks[i]);
+    }
+
+    public static void And(sbyte* input, sbyte* masks, sbyte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (sbyte)(input[i] & masks[i]);
+    }
+
+    public static void And(short* input, short* masks, short* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (short)(input[i] & masks[i]);
+    }
+
+    public static void And(ushort* input, ushort* masks, ushort* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ushort)(input[i] & masks[i]);
+    }
+
+    public static void And(int* input, int* masks, int* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] & masks[i];
+    }
+
+    public static void And(uint* input, uint* masks, uint* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] & masks[i];
+    }
+
+    public static void And(long* input, long* masks, long* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] & masks[i];
+    }
+
+    public static void And(ulong* input, ulong* masks, ulong* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] & masks[i];
+    }
+
+    public static void And(float* input, float* masks, float* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.And(Sse2.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) & BitCast<float, uint>(masks[i]));
+    }
+
+    public static void And(double* input, double* masks, double* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) & BitCast<double, ulong>(masks[i]));
+    }
+    #endregion
+
+
     #region Or(T* input, T mask, T* output, int length)
     public static void Or(byte* input, [ConstantExpected] byte mask, byte* output, int length)
     {
@@ -1704,6 +1850,155 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) | BitCast<double, ulong>(mask));
     }
     #endregion
+
+    #region Or(T* input, T* masks, T* output, int length)
+    public static void Or(byte* input, byte* masks, byte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (byte)(input[i] | masks[i]);
+    }
+
+    public static void Or(sbyte* input, sbyte* masks, sbyte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (sbyte)(input[i] | masks[i]);
+    }
+
+    public static void Or(short* input, short* masks, short* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (short)(input[i] | masks[i]);
+    }
+
+    public static void Or(ushort* input, ushort* masks, ushort* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ushort)(input[i] | masks[i]);
+    }
+
+    public static void Or(int* input, int* masks, int* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] | masks[i];
+    }
+
+    public static void Or(uint* input, uint* masks, uint* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] | masks[i];
+    }
+
+    public static void Or(long* input, long* masks, long* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] | masks[i];
+    }
+
+    public static void Or(ulong* input, ulong* masks, ulong* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] | masks[i];
+    }
+
+    public static void Or(float* input, float* masks, float* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Or(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) | BitCast<float, uint>(masks[i]));
+    }
+
+    public static void Or(double* input, double* masks, double* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) | BitCast<double, ulong>(masks[i]));
+    }
+    #endregion
+
 
     #region Xor(T* input, T mask, T* output, int length)
     public static void Xor(byte* input, [ConstantExpected] byte mask, byte* output, int length)
@@ -1965,6 +2260,155 @@ public static unsafe class Intrinsics
     }
     #endregion
 
+    #region Xor(T* input, T* masks, T* output, int length)
+    public static void Xor(byte* input, byte* masks, byte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (byte)(input[i] ^ masks[i]);
+    }
+
+    public static void Xor(sbyte* input, sbyte* masks, sbyte* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (sbyte)(input[i] ^ masks[i]);
+    }
+
+    public static void Xor(short* input, short* masks, short* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (short)(input[i] ^ masks[i]);
+    }
+
+    public static void Xor(ushort* input, ushort* masks, ushort* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = (ushort)(input[i] ^ masks[i]);
+    }
+
+    public static void Xor(int* input, int* masks, int* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] ^ masks[i];
+    }
+
+    public static void Xor(uint* input, uint* masks, uint* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] ^ masks[i];
+    }
+
+    public static void Xor(long* input, long* masks, long* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] ^ masks[i];
+    }
+
+    public static void Xor(ulong* input, ulong* masks, ulong* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
+
+        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = input[i] ^ masks[i];
+    }
+
+    public static void Xor(float* input, float* masks, float* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Xor(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) ^ BitCast<float, uint>(masks[i]));
+    }
+
+    public static void Xor(double* input, double* masks, double* output, int length)
+    {
+        int i = 0;
+
+#if NET6_0_OR_GREATER
+        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
+
+        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
+#endif
+
+        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) ^ BitCast<double, ulong>(masks[i]));
+    }
+    #endregion
+
+
     #region AndNot(T* input, T mask, T* output, int length)
     public static void AndNot(byte* input, [ConstantExpected] byte mask, byte* output, int length)
     {
@@ -2225,454 +2669,6 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #endregion
-
-    #region Bitwise(T* input, T* masks, T* output, int length)
-
-    #region And(T* input, T* masks, T* output, int length)
-    public static void And(byte* input, byte* masks, byte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (byte)(input[i] & masks[i]);
-    }
-
-    public static void And(sbyte* input, sbyte* masks, sbyte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (sbyte)(input[i] & masks[i]);
-    }
-
-    public static void And(short* input, short* masks, short* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (short)(input[i] & masks[i]);
-    }
-
-    public static void And(ushort* input, ushort* masks, ushort* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ushort)(input[i] & masks[i]);
-    }
-
-    public static void And(int* input, int* masks, int* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] & masks[i];
-    }
-
-    public static void And(uint* input, uint* masks, uint* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] & masks[i];
-    }
-
-    public static void And(long* input, long* masks, long* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] & masks[i];
-    }
-
-    public static void And(ulong* input, ulong* masks, ulong* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] & masks[i];
-    }
-
-    public static void And(float* input, float* masks, float* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.And(Sse2.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) & BitCast<float, uint>(masks[i]));
-    }
-
-    public static void And(double* input, double* masks, double* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) & BitCast<double, ulong>(masks[i]));
-    }
-    #endregion
-
-    #region Or(T* input, T* masks, T* output, int length)
-    public static void Or(byte* input, byte* masks, byte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (byte)(input[i] | masks[i]);
-    }
-
-    public static void Or(sbyte* input, sbyte* masks, sbyte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (sbyte)(input[i] | masks[i]);
-    }
-
-    public static void Or(short* input, short* masks, short* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (short)(input[i] | masks[i]);
-    }
-
-    public static void Or(ushort* input, ushort* masks, ushort* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ushort)(input[i] | masks[i]);
-    }
-
-    public static void Or(int* input, int* masks, int* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] | masks[i];
-    }
-
-    public static void Or(uint* input, uint* masks, uint* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] | masks[i];
-    }
-
-    public static void Or(long* input, long* masks, long* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] | masks[i];
-    }
-
-    public static void Or(ulong* input, ulong* masks, ulong* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] | masks[i];
-    }
-
-    public static void Or(float* input, float* masks, float* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Or(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) | BitCast<float, uint>(masks[i]));
-    }
-
-    public static void Or(double* input, double* masks, double* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) | BitCast<double, ulong>(masks[i]));
-    }
-    #endregion
-
-    #region Xor(T* input, T* masks, T* output, int length)
-    public static void Xor(byte* input, byte* masks, byte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (byte)(input[i] ^ masks[i]);
-    }
-
-    public static void Xor(sbyte* input, sbyte* masks, sbyte* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (sbyte)(input[i] ^ masks[i]);
-    }
-
-    public static void Xor(short* input, short* masks, short* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (short)(input[i] ^ masks[i]);
-    }
-
-    public static void Xor(ushort* input, ushort* masks, ushort* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = (ushort)(input[i] ^ masks[i]);
-    }
-
-    public static void Xor(int* input, int* masks, int* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] ^ masks[i];
-    }
-
-    public static void Xor(uint* input, uint* masks, uint* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] ^ masks[i];
-    }
-
-    public static void Xor(long* input, long* masks, long* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] ^ masks[i];
-    }
-
-    public static void Xor(ulong* input, ulong* masks, ulong* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
-
-        if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = input[i] ^ masks[i];
-    }
-
-    public static void Xor(float* input, float* masks, float* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Xor(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<uint, float>(BitCast<float, uint>(input[i]) ^ BitCast<float, uint>(masks[i]));
-    }
-
-    public static void Xor(double* input, double* masks, double* output, int length)
-    {
-        int i = 0;
-
-#if NET6_0_OR_GREATER
-        if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
-
-        if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
-#endif
-
-        for (; i < length; i++) output[i] = BitCast<ulong, double>(BitCast<double, ulong>(input[i]) ^ BitCast<double, ulong>(masks[i]));
-    }
-    #endregion
-
     #region AndNot(T* input, T* masks, T* output, int length)
     public static void AndNot(byte* input, byte* masks, byte* output, int length)
     {
@@ -2821,11 +2817,6 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #endregion
-
-    #endregion
-
-    #region Shift Operations
 
     #region ShiftLeftLogical(T* input, T count, T* output, int length)
     public static void ShiftLeftLogical(int* input, [ConstantExpected] byte count, int* output, int length)
@@ -2889,8 +2880,8 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #region ShiftLeftLogicalVariable(T* input, T* counts, T* output, int length)
-    public static void ShiftLeftLogicalVariable(int* input, uint* counts, int* output, int length)
+    #region ShiftLeftLogical(T* input, T* counts, T* output, int length)
+    public static void ShiftLeftLogical(int* input, uint* counts, int* output, int length)
     {
         int i = 0;
 
@@ -2903,7 +2894,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] << (int)counts[i];
     }
 
-    public static void ShiftLeftLogicalVariable(uint* input, uint* counts, uint* output, int length)
+    public static void ShiftLeftLogical(uint* input, uint* counts, uint* output, int length)
     {
         int i = 0;
 
@@ -2916,7 +2907,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] << (int)counts[i];
     }
 
-    public static void ShiftLeftLogicalVariable(long* input, ulong* counts, long* output, int length)
+    public static void ShiftLeftLogical(long* input, ulong* counts, long* output, int length)
     {
         int i = 0;
 
@@ -2929,7 +2920,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] << (int)counts[i];
     }
 
-    public static void ShiftLeftLogicalVariable(ulong* input, ulong* counts, ulong* output, int length)
+    public static void ShiftLeftLogical(ulong* input, ulong* counts, ulong* output, int length)
     {
         int i = 0;
 
@@ -2942,6 +2933,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] << (int)counts[i];
     }
     #endregion
+
 
     #region ShiftRightLogical(T* input, T count, T* output, int length)
     public static void ShiftRightLogical(int* input, [ConstantExpected] byte count, int* output, int length)
@@ -3005,8 +2997,8 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #region ShiftRightLogicalVariable(T* input, T* counts, T* output, int length)
-    public static void ShiftRightLogicalVariable(int* input, uint* counts, int* output, int length)
+    #region ShiftRightLogical(T* input, T* counts, T* output, int length)
+    public static void ShiftRightLogical(int* input, uint* counts, int* output, int length)
     {
         int i = 0;
 
@@ -3019,7 +3011,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >>> (int)counts[i];
     }
 
-    public static void ShiftRightLogicalVariable(uint* input, uint* counts, uint* output, int length)
+    public static void ShiftRightLogical(uint* input, uint* counts, uint* output, int length)
     {
         int i = 0;
 
@@ -3032,7 +3024,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >>> (int)counts[i];
     }
 
-    public static void ShiftRightLogicalVariable(long* input, ulong* counts, long* output, int length)
+    public static void ShiftRightLogical(long* input, ulong* counts, long* output, int length)
     {
         int i = 0;
 
@@ -3045,7 +3037,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >>> (int)counts[i];
     }
 
-    public static void ShiftRightLogicalVariable(ulong* input, ulong* counts, ulong* output, int length)
+    public static void ShiftRightLogical(ulong* input, ulong* counts, ulong* output, int length)
     {
         int i = 0;
 
@@ -3058,6 +3050,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >>> (int)counts[i];
     }
     #endregion
+
 
     #region ShiftRightArithmetic(T* input, T count, T* output, int length)
     public static void ShiftRightArithmetic(short* input, [ConstantExpected] byte count, short* output, int length)
@@ -3100,8 +3093,8 @@ public static unsafe class Intrinsics
     }
     #endregion
 
-    #region ShiftRightArithmeticVariable(T* input, T* counts, T* output, int length)
-    public static void ShiftRightArithmeticVariable(int* input, uint* counts, int* output, int length)
+    #region ShiftRightArithmetic(T* input, T* counts, T* output, int length)
+    public static void ShiftRightArithmetic(int* input, uint* counts, int* output, int length)
     {
         int i = 0;
 
@@ -3114,7 +3107,7 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >> (int)counts[i];
     }
 
-    public static void ShiftRightArithmeticVariable(long* input, ulong* counts, long* output, int length)
+    public static void ShiftRightArithmetic(long* input, ulong* counts, long* output, int length)
     {
         int i = 0;
 
@@ -3125,14 +3118,4 @@ public static unsafe class Intrinsics
         for (; i < length; i++) output[i] = input[i] >> (int)counts[i];
     }
     #endregion
-
-    #endregion
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static TTo BitCast<TFrom, TTo>(TFrom value) where TFrom : unmanaged where TTo : unmanaged => *(TTo*)(void*)&value;
-
-#if !NET6_0_OR_GREATER
-    // This attribute does nothing.
-    private class ConstantExpectedAttribute : Attribute;
-#endif
 }
