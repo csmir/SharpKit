@@ -84,7 +84,7 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int));
+        LocalBuilder localLen = generator.DeclareLocal(typeof(int)), localI = generator.DeclareLocal(typeof(int));
 
         Label labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel(), labelFalse = generator.DefineLabel();
 
@@ -93,11 +93,11 @@ internal static class LinqGenerator
         // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, locLen);
+        generator.Emit(Stloc, localLen);
 
         // i = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
 
         // goto check
         generator.Emit(Br, labelCheck);
@@ -110,21 +110,21 @@ internal static class LinqGenerator
         generator.Emit(Dup);
         generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
         generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldelem_Ref);
         generator.Emit(Castclass, typeof(T));
         generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
         generator.Emit(Brfalse, labelFalse);
 
         // ++i
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
 
         generator.MarkLabel(labelCheck);
-        generator.Emit(Ldloc, locI);
-        generator.Emit(Ldloc, locLen);
+        generator.Emit(Ldloc, localI);
+        generator.Emit(Ldloc, localLen);
         generator.Emit(Blt, labelLoop);
 
         // return true
@@ -145,7 +145,7 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int));
+        LocalBuilder localLen = generator.DeclareLocal(typeof(int)), localI = generator.DeclareLocal(typeof(int));
 
         Label labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel(), labelTrue = generator.DefineLabel();
 
@@ -154,11 +154,11 @@ internal static class LinqGenerator
         // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, locLen);
+        generator.Emit(Stloc, localLen);
 
         // i = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
         generator.Emit(Br, labelCheck);
 
         // call predicate
@@ -167,21 +167,21 @@ internal static class LinqGenerator
         generator.Emit(Dup);
         generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
         generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldelem_Ref);
         generator.Emit(Castclass, typeof(T));
         generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
         generator.Emit(Brtrue, labelTrue);
 
         // ++i
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
 
         generator.MarkLabel(labelCheck);
-        generator.Emit(Ldloc, locI);
-        generator.Emit(Ldloc, locLen);
+        generator.Emit(Ldloc, localI);
+        generator.Emit(Ldloc, localLen);
         generator.Emit(Blt, labelLoop);
 
         // return false
@@ -202,7 +202,7 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int)), locCount = generator.DeclareLocal(typeof(int));
+        LocalBuilder localLen = generator.DeclareLocal(typeof(int)), localI = generator.DeclareLocal(typeof(int)), localCount = generator.DeclareLocal(typeof(int));
 
         Label labelNext = generator.DefineLabel(), labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel();
 
@@ -211,13 +211,13 @@ internal static class LinqGenerator
         // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, locLen);
+        generator.Emit(Stloc, localLen);
 
         // i = 0; count = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, locCount);
+        generator.Emit(Stloc, localCount);
         generator.Emit(Br, labelCheck);
 
         // call predicate
@@ -226,32 +226,32 @@ internal static class LinqGenerator
         generator.Emit(Dup);
         generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
         generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldelem_Ref);
         generator.Emit(Castclass, typeof(T));
         generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
         generator.Emit(Brfalse, labelNext);
 
         // count++
-        generator.Emit(Ldloc, locCount);
+        generator.Emit(Ldloc, localCount);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, locCount);
+        generator.Emit(Stloc, localCount);
 
         // ++i
         generator.MarkLabel(labelNext);
-        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, localI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, locI);
+        generator.Emit(Stloc, localI);
 
         generator.MarkLabel(labelCheck);
-        generator.Emit(Ldloc, locI);
-        generator.Emit(Ldloc, locLen);
+        generator.Emit(Ldloc, localI);
+        generator.Emit(Ldloc, localLen);
         generator.Emit(Blt, labelLoop);
 
         // return count
-        generator.Emit(Ldloc, locCount);
+        generator.Emit(Ldloc, localCount);
         generator.Emit(Ret);
 
         #endregion
