@@ -49,13 +49,14 @@ public static class EnumerableExtensions
 
         #region Multidimension LINQ
 
+        /// <inheritdoc cref="Enumerable.All{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe bool MxAll<T>(Func<T, bool> predicate)
         {
             int length = array.Length;
 
             if (array is T[] typedArray) return typedArray.All(predicate);
 
-            if (typeof(T).IsValueType && array.GetType().GetElementType() == typeof(T))
+            if (typeof(T).IsValueType)
             {
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
@@ -77,7 +78,7 @@ public static class EnumerableExtensions
             }
 
 #if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.All, array.Rank))(array, predicate);
+            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.All, 1))(array, predicate);
 #else
             for (int i = 0; i < length; i++) if (!predicate((T)array.GetValue(i)!)) return false;
 
@@ -85,15 +86,17 @@ public static class EnumerableExtensions
 #endif
         }
 
+        /// <inheritdoc cref="Enumerable.Any{TSource}(IEnumerable{TSource})"/>
         public bool MxAny() => array.Length != 0;
 
+        /// <inheritdoc cref="Enumerable.Any{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe bool MxAny<T>(Func<T, bool> predicate)
         {
             int length = array.Length;
 
             if (array is T[] typedArray) return typedArray.Any(predicate);
 
-            if (typeof(T).IsValueType && array.GetType().GetElementType() == typeof(T))
+            if (typeof(T).IsValueType)
             {
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
@@ -115,7 +118,7 @@ public static class EnumerableExtensions
             }
 
 #if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.Any, array.Rank))(array, predicate);
+            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.Any, 2))(array, predicate);
 #else
             for (int i = 0; i < length; i++) if (predicate((T)array.GetValue(i)!)) return true;
 
@@ -123,15 +126,17 @@ public static class EnumerableExtensions
 #endif
         }
 
+        /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource})"/>
         public int MxCount() => array.Length;
 
+        /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe int MxCount<T>(Func<T, bool> predicate)
         {
             int length = array.Length, count = 0;
 
             if (array is T[] typedArray) return typedArray.Count(predicate);
 
-            if (typeof(T).IsValueType && array.GetType().GetElementType() == typeof(T))
+            if (typeof(T).IsValueType)
             {
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
@@ -153,7 +158,7 @@ public static class EnumerableExtensions
             }
 
 #if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, int>)LinqGenerator.GetMethod<T>(LinqMethod.Count, array.Rank))(array, predicate);
+            return ((Func<Array, Func<T, bool>, int>)LinqGenerator.GetMethod<T>(LinqMethod.Count, 2))(array, predicate);
 #else
             for (int i = 0; i < length; i++) if (predicate((T)array.GetValue(i)!)) count++;
 

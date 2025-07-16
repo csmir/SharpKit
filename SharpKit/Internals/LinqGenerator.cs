@@ -16,55 +16,61 @@ namespace SharpKit.Arrays;
 /// </remarks>
 internal static class LinqGenerator
 {
-    public static readonly ConcurrentDictionary<(LinqMethod, Type, int), Delegate> MethodCache = [];
+    /// <summary>
+    /// A thread-safe cache for storing delegates associated with specific LINQ method configurations.
+    /// </summary>
+    /// <remarks>
+    /// The cache uses a composite key consisting of the method name, overload index, target element type, and target element type.
+    /// </remarks>
+    private static readonly ConcurrentDictionary<(LinqMethod name, int overload, Type targetType), Delegate> _cache = [];
 
     /// <summary>
     /// Retrieves a delegate that represents the specified LINQ-like operation for a given type and rank.
     /// </summary>
-    /// <remarks>This method dynamically generates a delegate for the specified LINQ-like operation using IL generation. The generated delegate is cached for re-use to improve performance.</remarks>
-    /// <typeparam name="T">The type of elements in the array to be processed by the LINQ-like operation.</typeparam>
-    /// <param name="method">The LINQ-like method to generate.</param>
+    /// <remarks>This method dynamically generates a delegate for the specified LINQ operation using IL generation. The generated delegate is cached for reuse to improve performance.</remarks>
+    /// <typeparam name="T">The type of elements in the array to be processed by the LINQ operation.</typeparam>
+    /// <param name="method">The LINQ method to generate.</param>
     /// <param name="rank">The rank of the array to be processed.</param>
-    /// <returns>A delegate that performs the specified LINQ-like operation on an array of type <typeparamref name="T"/>. The delegate's signature is equivalent to the original LINQ return.</returns>
+    /// <param name="overload">Specifies the overload of the LINQ method to generate.</param>
+    /// <returns>A delegate that performs the specified LINQ operation on an array of type <typeparamref name="T"/>. The delegate's signature is equivalent to the original LINQ return.</returns>
     /// <exception cref="NotImplementedException">Thrown if the specified <paramref name="method"/> is not implemented.</exception>
-    public static Delegate GetMethod<T>(LinqMethod method, int rank, int overload = 1)
+    public static Delegate GetMethod<T>(LinqMethod method, int overload)
     {
-        if (MethodCache.TryGetValue((method, typeof(T), rank), out Delegate? cachedMethod)) return cachedMethod;
+        if (_cache.TryGetValue((method, overload, typeof(T)), out Delegate? cachedMethod)) return cachedMethod;
 
-        Type returnType; Type[] parameters;
+        Type returnType; Type[] parameters; Func<DynamicMethod, Delegate> emitter;
 
-        switch (method)
+        switch ((method, overload))
         {
-            default: throw new NotImplementedException($"Linq method {method} is not implemented.");
-
-            case All:
+            case (All, 1):
                 parameters = [typeof(Array), typeof(Func<T, bool>)];
                 returnType = typeof(bool);
+                emitter = EmitAll<T>;
                 break;
 
-            case Any:
+            case (Any, 1): goto noGeneration;
+
+            case (Any, 2):
                 parameters = [typeof(Array), typeof(Func<T, bool>)];
                 returnType = typeof(bool);
+                emitter = EmitAny<T>;
                 break;
 
-            case Count:
+            case (Count, 1): goto noGeneration;
+
+            case (Count, 2):
                 parameters = [typeof(Array), typeof(Func<T, bool>)];
                 returnType = typeof(int);
+                emitter = EmitCount<T>;
                 break;
+
+            noGeneration: throw new ArgumentException($"Linq method {method}_{overload} doesn't need IL generation, please use the appropriate overload.");
+            default: throw new NotImplementedException($"Linq method {method}_{overload} is not implemented, or does not exist.");
         }
 
-        DynamicMethod generated = new($"Mx{method}_{typeof(T).Name}_{rank}D", returnType, parameters, typeof(LinqGenerator).Module, true);
+        Delegate linq = emitter(new($"Mx{method}_{overload}_{typeof(T).Name}", returnType, parameters, typeof(LinqGenerator).Module, true));
 
-        Delegate linq = method switch
-        {   
-              All =>   EmitAll<T>(generated),
-              Any =>   EmitAny<T>(generated),
-            Count => EmitCount<T>(generated),
-
-            _ => throw new NotImplementedException($"Linq method {method} is not implemented."),
-        };
-
-        MethodCache[(method, typeof(T), rank)] = linq;
+        _cache[(method, overload, typeof(T))] = linq;
 
         return linq;
 
