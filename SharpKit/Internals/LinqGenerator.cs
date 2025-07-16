@@ -16,6 +16,8 @@ namespace SharpKit.Arrays;
 /// </remarks>
 internal static class LinqGenerator
 {
+    private static class FuncCache<T> { public static readonly MethodInfo Invoke = typeof(Func<T, bool>).GetMethod("Invoke")!; }
+
     /// <summary>
     /// A thread-safe cache for storing delegates associated with specific LINQ method configurations.
     /// </summary>
@@ -82,59 +84,55 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder current = generator.DeclareLocal(typeof(object)), length = generator.DeclareLocal(typeof(int)), i = generator.DeclareLocal(typeof(int));
+        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int));
 
-        Label jump = generator.DefineLabel(), start = generator.DefineLabel(), check = generator.DefineLabel();
+        Label labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel(), labelFalse = generator.DefineLabel();
 
         #region IL
 
-        // totalLength = array.Length
+        // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, length);
+        generator.Emit(Stloc, locLen);
 
-        // flatIndex = 0
+        // i = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
 
-        generator.Emit(Br, check);
+        // goto check
+        generator.Emit(Br, labelCheck);
 
-        // loopStart:
-        generator.MarkLabel(start);
+        // loop:
+        generator.MarkLabel(labelLoop);
 
-        // Load reference to array and flat index
-        generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldelema, typeof(T));
-        generator.Emit(Ldobj, typeof(T));
-        generator.Emit(Box, typeof(T));
-        generator.Emit(Stloc, current);
-
-        // if (!predicate((T)currentValue)) return false;
+        // call predicate
         generator.Emit(Ldarg_1);
-        generator.Emit(Ldloc, current);
-        generator.Emit(Unbox_Any, typeof(T));
-        generator.Emit(Callvirt, typeof(Func<T, bool>).GetMethod("Invoke")!);
-        generator.Emit(Brfalse, jump);
+        generator.Emit(Dup);
+        generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
+        generator.Emit(Ldarg_0);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldelem_Ref);
+        generator.Emit(Castclass, typeof(T));
+        generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
+        generator.Emit(Brfalse, labelFalse);
 
-        // flatIndex++
-        generator.Emit(Ldloc, i);
+        // ++i
+        generator.Emit(Ldloc, locI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
 
-        // loopCheck:
-        generator.MarkLabel(check);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldloc, length);
-        generator.Emit(Blt, start);
+        generator.MarkLabel(labelCheck);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, locLen);
+        generator.Emit(Blt, labelLoop);
 
         // return true
         generator.Emit(Ldc_I4_1);
         generator.Emit(Ret);
 
         // return false
-        generator.MarkLabel(jump);
+        generator.MarkLabel(labelFalse);
         generator.Emit(Ldc_I4_0);
         generator.Emit(Ret);
 
@@ -147,59 +145,51 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder current = generator.DeclareLocal(typeof(object)), length = generator.DeclareLocal(typeof(int)), i = generator.DeclareLocal(typeof(int));
+        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int));
 
-        Label jump = generator.DefineLabel(), start = generator.DefineLabel(), check = generator.DefineLabel();
+        Label labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel(), labelTrue = generator.DefineLabel();
 
         #region IL
 
-        // totalLength = array.Length
+        // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, length);
+        generator.Emit(Stloc, locLen);
 
-        // flatIndex = 0
+        // i = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
+        generator.Emit(Br, labelCheck);
 
-        generator.Emit(Br, check);
-
-        // loopStart:
-        generator.MarkLabel(start);
-
-        // Load reference to array and flat index
-        generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldelema, typeof(T));
-        generator.Emit(Ldobj, typeof(T));
-        generator.Emit(Box, typeof(T));
-        generator.Emit(Stloc, current);
-
-        // if (predicate((T)currentValue)) return true;
+        // call predicate
+        generator.MarkLabel(labelLoop);
         generator.Emit(Ldarg_1);
-        generator.Emit(Ldloc, current);
-        generator.Emit(Unbox_Any, typeof(T));
-        generator.Emit(Callvirt, typeof(Func<T, bool>).GetMethod("Invoke")!);
-        generator.Emit(Brtrue, jump);
+        generator.Emit(Dup);
+        generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
+        generator.Emit(Ldarg_0);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldelem_Ref);
+        generator.Emit(Castclass, typeof(T));
+        generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
+        generator.Emit(Brtrue, labelTrue);
 
-        // flatIndex++
-        generator.Emit(Ldloc, i);
+        // ++i
+        generator.Emit(Ldloc, locI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
 
-        // loopCheck:
-        generator.MarkLabel(check);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldloc, length);
-        generator.Emit(Blt, start);
+        generator.MarkLabel(labelCheck);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, locLen);
+        generator.Emit(Blt, labelLoop);
 
         // return false
         generator.Emit(Ldc_I4_0);
         generator.Emit(Ret);
 
         // return true
-        generator.MarkLabel(jump);
+        generator.MarkLabel(labelTrue);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Ret);
 
@@ -212,66 +202,61 @@ internal static class LinqGenerator
     {
         ILGenerator generator = method.GetILGenerator();
 
-        LocalBuilder current = generator.DeclareLocal(typeof(object)), length = generator.DeclareLocal(typeof(int)), i = generator.DeclareLocal(typeof(int)), count = generator.DeclareLocal(typeof(int));
+        LocalBuilder locLen = generator.DeclareLocal(typeof(int)), locI = generator.DeclareLocal(typeof(int)), locCount = generator.DeclareLocal(typeof(int));
 
-        Label jump = generator.DefineLabel(), start = generator.DefineLabel(), check = generator.DefineLabel();
+        Label labelNext = generator.DefineLabel(), labelLoop = generator.DefineLabel(), labelCheck = generator.DefineLabel();
 
         #region IL
 
-        // totalLength = array.Length
+        // length = array.Length
         generator.Emit(Ldarg_0);
         generator.Emit(Callvirt, typeof(Array).GetProperty("Length")!.GetGetMethod()!);
-        generator.Emit(Stloc, length);
+        generator.Emit(Stloc, locLen);
 
-        // flatIndex = 0
+        // i = 0; count = 0
         generator.Emit(Ldc_I4_0);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
+        generator.Emit(Ldc_I4_0);
+        generator.Emit(Stloc, locCount);
+        generator.Emit(Br, labelCheck);
 
-        generator.Emit(Br, check);
-
-        // loopStart:
-        generator.MarkLabel(start);
-
-        // Load reference to array and flat index
-        generator.Emit(Ldarg_0);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldelema, typeof(T));
-        generator.Emit(Ldobj, typeof(T));
-        generator.Emit(Box, typeof(T));
-        generator.Emit(Stloc, current);
-
-        // if (predicate((T)currentValue)) count++
+        // call predicate
+        generator.MarkLabel(labelLoop);
         generator.Emit(Ldarg_1);
-        generator.Emit(Ldloc, current);
-        generator.Emit(Unbox_Any, typeof(T));
-        generator.Emit(Callvirt, typeof(Func<T, bool>).GetMethod("Invoke")!);
-        generator.Emit(Brfalse, jump);
-        generator.Emit(Ldloc, count);
+        generator.Emit(Dup);
+        generator.Emit(Ldvirtftn, FuncCache<T>.Invoke);
+        generator.Emit(Ldarg_0);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldelem_Ref);
+        generator.Emit(Castclass, typeof(T));
+        generator.EmitCalli(Calli, CallingConventions.HasThis, typeof(bool), [typeof(T)], null);
+        generator.Emit(Brfalse, labelNext);
+
+        // count++
+        generator.Emit(Ldloc, locCount);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, count);
+        generator.Emit(Stloc, locCount);
 
-        // flatIndex++
-        generator.MarkLabel(jump);
-        generator.Emit(Ldloc, i);
+        // ++i
+        generator.MarkLabel(labelNext);
+        generator.Emit(Ldloc, locI);
         generator.Emit(Ldc_I4_1);
         generator.Emit(Add);
-        generator.Emit(Stloc, i);
+        generator.Emit(Stloc, locI);
 
-        // loopCheck:
-        generator.MarkLabel(check);
-        generator.Emit(Ldloc, i);
-        generator.Emit(Ldloc, length);
-        generator.Emit(Blt, start);
+        generator.MarkLabel(labelCheck);
+        generator.Emit(Ldloc, locI);
+        generator.Emit(Ldloc, locLen);
+        generator.Emit(Blt, labelLoop);
 
         // return count
-        generator.Emit(Ldloc, count);
+        generator.Emit(Ldloc, locCount);
         generator.Emit(Ret);
 
         #endregion
 
         return method.CreateDelegate(typeof(Func<Array, Func<T, bool>, int>));
-
     }
 
     #endregion
