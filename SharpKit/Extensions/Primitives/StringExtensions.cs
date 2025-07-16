@@ -1,6 +1,5 @@
 ﻿namespace SharpKit;
-
-public static class PrimitiveExtensions
+public static class StringExtensions
 {
     extension(string str)
     {

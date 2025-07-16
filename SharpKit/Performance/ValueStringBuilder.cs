@@ -3,7 +3,7 @@
 using System.Runtime.InteropServices;
 using System.Buffers;
 
-namespace SharpKit;
+namespace SharpKit.Performance;
 
 /// <summary>
 /// A cheaper single-use alternative to <see cref="System.Text.StringBuilder"/>, where the intitial backing store is a <see cref="Span{T}"/> of type <see cref="char"/>.
