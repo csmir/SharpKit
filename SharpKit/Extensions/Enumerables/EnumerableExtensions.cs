@@ -1,9 +1,5 @@
-﻿#if NET8_0_OR_GREATER
-using SharpKit.Internals;
-using SharpKit.Arrays;
-#endif
-
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using SharpKit.Collections;
 
 namespace SharpKit;
 
@@ -48,42 +44,32 @@ public static class EnumerableExtensions
         }
 
         #region Multidimension LINQ
+        #pragma warning disable CS8500
 
         /// <inheritdoc cref="Enumerable.All{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe bool MxAll<T>(Func<T, bool> predicate)
         {
-            int length = array.Length;
-
-            if (array is T[] typedArray) return typedArray.All(predicate);
+            if (array is T[] flat) return flat.All(predicate);
 
             if (typeof(T).IsValueType)
             {
+#if NET8_0_OR_GREATER
+                foreach (T item in (ValueArray<T>)array) if (!predicate(item)) return false;
+#else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
-
-#pragma warning disable CS8500 // Compiler can't recognize this is a value type.
                 try
                 {
-                    byte* basePtr = (byte*)handle.AddrOfPinnedObject();
-                    int size = sizeof(T);
-
-                    for (int i = 0; i < length; i++) if (!predicate(*(T*)(basePtr + i * size))) return false;
+                    int length = array.Length;
+                    T* basePtr = (T*)handle.AddrOfPinnedObject();
+                    for (int i = 0; i < length; i++) if (!predicate(basePtr[i])) return false;
                 }
-                finally
-                {
-                    handle.Free();
-                }
-#pragma warning restore CS8500
-
-                return true;
+                finally { handle.Free(); }
+#endif
             }
 
-#if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.All, 1))(array, predicate);
-#else
-            for (int i = 0; i < length; i++) if (!predicate((T)array.GetValue(i)!)) return false;
+            else foreach (T item in array) if (!predicate(item)) return false;
 
             return true;
-#endif
         }
 
         /// <inheritdoc cref="Enumerable.Any{TSource}(IEnumerable{TSource})"/>
@@ -92,38 +78,27 @@ public static class EnumerableExtensions
         /// <inheritdoc cref="Enumerable.Any{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe bool MxAny<T>(Func<T, bool> predicate)
         {
-            int length = array.Length;
-
-            if (array is T[] typedArray) return typedArray.Any(predicate);
+            if (array is T[] flat) return flat.Any(predicate);
 
             if (typeof(T).IsValueType)
             {
+#if NET8_0_OR_GREATER
+                foreach (T item in (ValueArray<T>)array) if (predicate(item)) return true;
+#else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
-
-#pragma warning disable CS8500 // Compiler can't recognize this is a value type.
                 try
                 {
-                    byte* basePtr = (byte*)handle.AddrOfPinnedObject();
-                    int size = sizeof(T);
-
-                    for (int i = 0; i < length; i++) if (predicate(*(T*)(basePtr + i * size))) return true;
+                    int length = array.Length;
+                    T* basePtr = (T*)handle.AddrOfPinnedObject();
+                    for (int i = 0; i < length; i++) if (predicate(basePtr[i])) return true;
                 }
-                finally
-                {
-                    handle.Free();
-                }
-#pragma warning restore CS8500
-
-                return false;
+                finally { handle.Free(); }
+#endif
             }
 
-#if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, bool>)LinqGenerator.GetMethod<T>(LinqMethod.Any, 2))(array, predicate);
-#else
-            for (int i = 0; i < length; i++) if (predicate((T)array.GetValue(i)!)) return true;
+            else foreach (T item in array) if (predicate(item)) return true;
 
             return false;
-#endif
         }
 
         /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource})"/>
@@ -132,40 +107,31 @@ public static class EnumerableExtensions
         /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe int MxCount<T>(Func<T, bool> predicate)
         {
-            int length = array.Length, count = 0;
+            if (array is T[] flat) return flat.Count(predicate);
 
-            if (array is T[] typedArray) return typedArray.Count(predicate);
-
+            int count = 0;
             if (typeof(T).IsValueType)
             {
+#if NET8_0_OR_GREATER
+                foreach (T item in (ValueArray<T>)array) if (predicate(item)) count++;
+#else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
-
-#pragma warning disable CS8500 // Compiler can't recognize this is a value type.
                 try
                 {
-                    byte* basePtr = (byte*)handle.AddrOfPinnedObject();
-                    int size = sizeof(T);
-
-                    for (int i = 0; i < length; i++) if (predicate(*(T*)(basePtr + i * size))) count++;
+                    int length = array.Length;
+                    T* basePtr = (T*)handle.AddrOfPinnedObject();
+                    for (int i = 0; i < length; i++) if (predicate(basePtr[i])) count++;
                 }
-                finally
-                {
-                    handle.Free();
-                }
-#pragma warning restore CS8500
-
-                return count;
+                finally { handle.Free(); }
+#endif
             }
 
-#if NET8_0_OR_GREATER
-            return ((Func<Array, Func<T, bool>, int>)LinqGenerator.GetMethod<T>(LinqMethod.Count, 2))(array, predicate);
-#else
-            for (int i = 0; i < length; i++) if (predicate((T)array.GetValue(i)!)) count++;
+            else foreach (T item in array) if (predicate(item)) count++;
 
             return count;
-#endif
         }
 
+        #pragma warning restore CS8500
         #endregion
     }
 }
