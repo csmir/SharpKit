@@ -1,8 +1,21 @@
-﻿namespace SharpKit;
+﻿using System.Text;
+
+namespace SharpKit;
+
+/// <summary>
+///     Extensions for the <see cref="string"/> primitive type.
+/// </summary>
 public static class StringExtensions
 {
     extension(string str)
     {
+        /// <summary>
+        ///     Reduces the string to a specified length, optionally killing at whitespace and adding a finalizer to the reduced string.
+        /// </summary>
+        /// <param name="maxLength">The maximum allowed length that the string can be.</param>
+        /// <param name="killAtWhitespace">Sets whether the reduced string should kill at last encounter of whitespace, cutting off any trailing words that were likely cut off in the process.</param>
+        /// <param name="finalizer">The finalizer to write to the end of the string. If null or empty, it is skipped. The finalizer will not exceed the maximum length of the string.</param>
+        /// <returns>A copy of this string which has been reduced to be equal to or less than maximum length based on the provided settings.</returns>
         public string Reduce(int maxLength, bool killAtWhitespace = false, string finalizer = "...")
         {
             ArgumentNullException.ThrowIfNull(str, nameof(str));
@@ -37,17 +50,49 @@ public static class StringExtensions
             return str;
         }
 
-        public bool ContainsSymbols()
+        /// <summary>
+        ///     Checks whether the string is numeric (contains only digit characters).
+        /// </summary>
+        /// <returns><see langword="true"/> if the current string contains only digits; otherwise <see langword="false"/>.</returns>
+        public bool IsNumeric()
+        {
+            ArgumentException.ThrowIfNullOrEmpty(str, nameof(str));
+
+            foreach (var c in str)
+            {
+                if (!char.IsDigit(c))
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Checks whether the string is alphanumeric (contains only letter and digit characters).
+        /// </summary>
+        /// <returns><see langword="true"/> if the current string contains only digits or alphabetical characters; otherwise <see langword="false"/>.</returns>
+        public bool IsAlpha()
         {
             ArgumentException.ThrowIfNullOrEmpty(str, nameof(str));
 
             foreach (var c in str)
             {
                 if (!char.IsLetterOrDigit(c))
-                    return true;
+                    return false;
             }
 
-            return false;
+            return true;
+        }
+
+        /// <summary>
+        ///     Encodes the string into a byte array using the specified encoding (<see cref="Encoding.UTF8"/> by default).
+        /// </summary>
+        /// <param name="encoding">The encoding to apply to the conversion.</param>
+        /// <returns>A new byte array containing the encoded string.</returns>
+        public byte[] Encode(Encoding? encoding = null)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(str, nameof(str));
+
+            return (encoding ?? Encoding.UTF8).GetBytes(str);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Text;
+﻿using System.Text;
 
 namespace SharpKit;
 
@@ -64,44 +63,6 @@ public static class StructExtensions
                 sb.Append($"{span.Seconds} second{(span.Seconds > 1 ? "s" : "")}");
 
             return sb.ToString();
-        }
-    }
-
-    extension(Color color)
-    {
-        public (double H, double S, double L) ToHSL()
-            => (color.GetHue(), color.GetSaturation(), color.GetBrightness());
-
-        public (double H, double S, double V) ToHSV()
-        {
-            double max = Math.Max(color.R, Math.Max(color.G, color.B));
-            double min = Math.Min(color.R, Math.Min(color.G, color.B));
-
-            return (color.GetHue(), max == 0 ? 0 : 1d - 1d * min / max, max / 255d);
-        }
-
-        public static IEnumerable<Color> Gradient(Color start, Color target, int steps)
-        {
-            var (rMin, gMin, bMin) = (start.R,  start.G,  start.B);
-            var (rMax, gMax, bMax) = (target.R, target.G, target.B);
-
-            for (int i = 0; i < steps; i++)
-            {
-                var r = rMin + (rMax - rMin) * i / steps;
-                var g = gMin + (gMax - gMin) * i / steps;
-                var b = bMin + (bMax - bMin) * i / steps;
-
-                yield return Color.FromArgb(r, g, b);
-            }
-
-            yield return target;
-        }
-
-        public static IEnumerable<Color> Sort(IEnumerable<Color> colors, bool ascending = true)
-        {
-            var comparer = new ColorComparer();
-
-            return ascending ? colors.OrderBy(c => c, comparer) : colors.OrderByDescending(c => c, comparer);
         }
     }
 }
