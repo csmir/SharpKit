@@ -6,9 +6,9 @@ using System.Buffers;
 namespace SharpKit.Performance;
 
 /// <summary>
-/// A cheaper single-use alternative to <see cref="System.Text.StringBuilder"/>, where the intitial backing store is a <see cref="Span{T}"/> of type <see cref="char"/>.
-/// The stack-allocated buffer will be used until it overflows, at which point a larger array will be rented from <see cref="ArrayPool{T}.Shared"/> to minimize allocation.
-/// When <see cref="ToString"/> is called, the builder will return the rented array to the pool, destroying the builder automatically.
+///     A cheaper single-use alternative to <see cref="System.Text.StringBuilder"/>, where the intitial backing store is a <see cref="Span{T}"/> of type <see cref="char"/>.
+///     The stack-allocated buffer will be used until it overflows, at which point a larger array will be rented from <see cref="ArrayPool{T}.Shared"/> to minimize allocation.
+///     When <see cref="ToString"/> is called, the builder will return the rented array to the pool, destroying the builder automatically.
 /// </summary>
 public ref struct ValueStringBuilder(Span<char> initialBuffer)
 {
@@ -17,7 +17,7 @@ public ref struct ValueStringBuilder(Span<char> initialBuffer)
     private char[]? _rentedArray;
 
     /// <summary>
-    /// Appends a single character to the builder.
+    ///     Appends a single character to the builder.
     /// </summary>
     /// <param name="c">The character to append.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,7 +31,7 @@ public ref struct ValueStringBuilder(Span<char> initialBuffer)
     }
 
     /// <summary>
-    /// Appends a string to the builder.
+    ///     Appends a string to the builder.
     /// </summary>
     /// <param name="s">The string to append.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -50,7 +50,7 @@ public ref struct ValueStringBuilder(Span<char> initialBuffer)
     }
 
     /// <summary>
-    /// Grows the internal buffer to accommodate additional characters.
+    ///     Grows the internal buffer to accommodate additional characters.
     /// </summary>
     /// <param name="requested">The minimum number of additional characters required.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -72,13 +72,14 @@ public ref struct ValueStringBuilder(Span<char> initialBuffer)
     }
 
     /// <summary>
-    /// Converts the current contents of the builder to a string, and destroys the builder by returning the rented array to the pool.<br/>
-    /// Only call at the end of the builder's lifetime, as it will no longer be usable after this call.
+    ///     Converts the current contents of the builder to a string, and destroys the builder by returning the rented array to the pool.<br/>
+    ///     Only call at the end of the builder's lifetime, as it will no longer be usable after this call.
     /// </summary>
     /// <returns>The string representation of the builder's contents.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override readonly string ToString() => _span.ToString();
 
+    /// <inheritdoc />
     public readonly void Dispose()
     {
         if (_rentedArray != null)
