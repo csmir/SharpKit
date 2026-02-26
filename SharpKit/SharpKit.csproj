@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup Label="Compilation Options">
+	<PropertyGroup Label="Compilation Options">
 
 		<!-- Base Options -->
-		<TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
 
 		<!-- Analysis Options -->
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 		<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
-		<IsAotCompatible Condition="'$(TargetFramework)' == 'net8'">true</IsAotCompatible>
+		<IsAotCompatible Condition="'$(TargetFramework)' == 'net10'">true</IsAotCompatible>
 
 		<!-- Language Options -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -16,7 +16,7 @@
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		
-  </PropertyGroup>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<Using Include="System.Collections" />
