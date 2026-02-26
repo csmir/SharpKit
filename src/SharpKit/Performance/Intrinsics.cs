@@ -1,4 +1,4 @@
-﻿#if NET6_0_OR_GREATER
+﻿#if NET8_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif
@@ -12,7 +12,7 @@ public static unsafe class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static TTo BitCast<TFrom, TTo>(TFrom value) where TFrom : unmanaged where TTo : unmanaged => *(TTo*)(void*)&value;
 
-#if !NET6_0_OR_GREATER
+#if !NET8_0_OR_GREATER
     // This attribute does nothing.
     private class ConstantExpectedAttribute : Attribute;
 #endif
@@ -22,7 +22,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && length >= v256x1)
         {
             Vector256<byte> values = Vector256.Create(value);
@@ -43,7 +43,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x1)
         {
             Vector256<sbyte> values = Vector256.Create(value);
@@ -64,7 +64,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<short> values = Vector256.Create(value);
@@ -85,7 +85,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<ushort> values = Vector256.Create(value);
@@ -106,7 +106,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> values = Vector512.Create(value);
@@ -133,7 +133,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> values = Vector512.Create(value);
@@ -160,7 +160,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> values = Vector512.Create(value);
@@ -187,7 +187,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> values = Vector512.Create(value);
@@ -214,7 +214,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<float> values = Vector512.Create(value);
@@ -241,7 +241,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<double> values = Vector512.Create(value);
@@ -270,7 +270,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -283,7 +283,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -296,7 +296,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -309,7 +309,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Add(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -322,7 +322,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -337,7 +337,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -352,7 +352,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -367,7 +367,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -382,7 +382,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -397,7 +397,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Add(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Add(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -415,7 +415,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x1)
         {
             Vector256<byte> values = Vector256.Create(value);
@@ -436,7 +436,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x1)
         {
             Vector256<sbyte> values = Vector256.Create(value);
@@ -457,7 +457,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<short> values = Vector256.Create(value);
@@ -478,7 +478,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<ushort> values = Vector256.Create(value);
@@ -501,7 +501,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -514,7 +514,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -527,7 +527,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -540,7 +540,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AddSaturate(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.AddSaturate(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -556,7 +556,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> values = Vector512.Create(value);
@@ -577,7 +577,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> values = Vector512.Create(value);
@@ -604,7 +604,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<float> values = Vector512.Create(value);
@@ -631,7 +631,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<double> values = Vector512.Create(value);
@@ -660,7 +660,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -673,7 +673,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -688,7 +688,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -703,7 +703,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Multiply(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Multiply(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -721,7 +721,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> values = Vector512.Create(value);
@@ -742,7 +742,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> values = Vector512.Create(value);
@@ -765,7 +765,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -778,7 +778,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.MultiplyLow(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.MultiplyLow(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -794,7 +794,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x1)
         {
             Vector256<byte> values = Vector256.Create(value);
@@ -815,7 +815,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x1)
         {
             Vector256<sbyte> values = Vector256.Create(value);
@@ -836,7 +836,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<short> values = Vector256.Create(value);
@@ -857,7 +857,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported && (length - i) >= v256x2)
         {
             Vector256<ushort> values = Vector256.Create(value);
@@ -878,7 +878,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> values = Vector512.Create(value);
@@ -905,7 +905,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> values = Vector512.Create(value);
@@ -932,7 +932,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> values = Vector512.Create(value);
@@ -959,7 +959,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> values = Vector512.Create(value);
@@ -986,7 +986,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<float> values = Vector512.Create(value);
@@ -1013,7 +1013,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<double> values = Vector512.Create(value);
@@ -1042,7 +1042,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Subtract(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -1055,7 +1055,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x1; i += v128x1) Sse2.Store(output + i, Sse2.Subtract(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -1068,7 +1068,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Subtract(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -1081,7 +1081,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.Subtract(Sse2.LoadVector128(input + i), Sse2.LoadVector128(values + i)));
@@ -1094,7 +1094,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1109,7 +1109,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1124,7 +1124,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1139,7 +1139,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1154,7 +1154,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1169,7 +1169,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Subtract(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(values + i)));
 
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Subtract(Avx.LoadVector256(input + i), Avx.LoadVector256(values + i)));
@@ -1187,7 +1187,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<byte> masks = Vector512.Create(mask);
@@ -1214,7 +1214,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<sbyte> masks = Vector512.Create(mask);
@@ -1241,7 +1241,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<short> masks = Vector512.Create(mask);
@@ -1268,7 +1268,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ushort> masks = Vector512.Create(mask);
@@ -1295,7 +1295,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> masks = Vector512.Create(mask);
@@ -1322,7 +1322,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> masks = Vector512.Create(mask);
@@ -1349,7 +1349,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> masks = Vector512.Create(mask);
@@ -1376,7 +1376,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> masks = Vector512.Create(mask);
@@ -1403,7 +1403,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x4)
         {
             Vector256<float> masks = Vector256.Create(mask);
@@ -1424,7 +1424,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x8)
         {
             Vector256<double> masks = Vector256.Create(mask);
@@ -1447,7 +1447,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1462,7 +1462,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1477,7 +1477,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1492,7 +1492,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1507,7 +1507,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1522,7 +1522,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1537,7 +1537,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1552,7 +1552,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.And(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1567,7 +1567,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.And(Sse2.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
@@ -1580,7 +1580,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.And(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.And(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
@@ -1596,7 +1596,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<byte> masks = Vector512.Create(mask);
@@ -1623,7 +1623,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<sbyte> masks = Vector512.Create(mask);
@@ -1650,7 +1650,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<short> masks = Vector512.Create(mask);
@@ -1677,7 +1677,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ushort> masks = Vector512.Create(mask);
@@ -1704,7 +1704,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> masks = Vector512.Create(mask);
@@ -1731,7 +1731,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> masks = Vector512.Create(mask);
@@ -1758,7 +1758,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> masks = Vector512.Create(mask);
@@ -1785,7 +1785,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> masks = Vector512.Create(mask);
@@ -1812,7 +1812,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x4)
         {
             Vector256<float> masks = Vector256.Create(mask);
@@ -1833,7 +1833,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x8)
         {
             Vector256<double> masks = Vector256.Create(mask);
@@ -1856,7 +1856,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1871,7 +1871,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1886,7 +1886,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1901,7 +1901,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1916,7 +1916,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1931,7 +1931,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1946,7 +1946,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1961,7 +1961,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Or(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -1976,7 +1976,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Or(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
@@ -1989,7 +1989,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Or(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Or(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
@@ -2005,7 +2005,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<byte> masks = Vector512.Create(mask);
@@ -2032,7 +2032,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<sbyte> masks = Vector512.Create(mask);
@@ -2059,7 +2059,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<short> masks = Vector512.Create(mask);
@@ -2086,7 +2086,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ushort> masks = Vector512.Create(mask);
@@ -2113,7 +2113,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> masks = Vector512.Create(mask);
@@ -2140,7 +2140,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> masks = Vector512.Create(mask);
@@ -2167,7 +2167,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> masks = Vector512.Create(mask);
@@ -2194,7 +2194,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> masks = Vector512.Create(mask);
@@ -2221,7 +2221,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x4)
         {
             Vector256<float> masks = Vector256.Create(mask);
@@ -2242,7 +2242,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x8)
         {
             Vector256<double> masks = Vector256.Create(mask);
@@ -2265,7 +2265,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2280,7 +2280,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2295,7 +2295,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2310,7 +2310,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2325,7 +2325,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2340,7 +2340,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2355,7 +2355,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2370,7 +2370,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.Xor(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2385,7 +2385,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.Xor(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
@@ -2398,7 +2398,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.Xor(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.Xor(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
@@ -2414,7 +2414,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<byte> masks = Vector512.Create(mask);
@@ -2441,7 +2441,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<sbyte> masks = Vector512.Create(mask);
@@ -2468,7 +2468,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<short> masks = Vector512.Create(mask);
@@ -2495,7 +2495,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ushort> masks = Vector512.Create(mask);
@@ -2522,7 +2522,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<int> masks = Vector512.Create(mask);
@@ -2549,7 +2549,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<uint> masks = Vector512.Create(mask);
@@ -2576,7 +2576,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<long> masks = Vector512.Create(mask);
@@ -2603,7 +2603,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported)
         {
             Vector512<ulong> masks = Vector512.Create(mask);
@@ -2630,7 +2630,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x4)
         {
             Vector256<float> masks = Vector256.Create(mask);
@@ -2651,7 +2651,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported && (length - i) >= v256x8)
         {
             Vector256<double> masks = Vector256.Create(mask);
@@ -2674,7 +2674,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2689,7 +2689,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x1; i += v512x1) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x1; i += v256x1) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2704,7 +2704,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2719,7 +2719,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x2; i += v512x2) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2734,7 +2734,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2749,7 +2749,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2764,7 +2764,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2779,7 +2779,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.AndNot(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(masks + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
@@ -2794,7 +2794,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse.IsSupported) for (; i <= length - v128x4; i += v128x4) Sse.Store(output + i, Sse.AndNot(Sse.LoadVector128(input + i), Sse.LoadVector128(masks + i)));
@@ -2807,7 +2807,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx.AndNot(Avx.LoadVector256(input + i), Avx.LoadVector256(masks + i)));
 
         if (Sse2.IsSupported) for (; i <= length - v128x8; i += v128x8) Sse2.Store(output + i, Sse2.AndNot(Sse2.LoadVector128(input + i), Sse2.LoadVector128(masks + i)));
@@ -2823,7 +2823,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogical(Avx.LoadVector256(input + i), count));
@@ -2838,7 +2838,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogical(Avx.LoadVector256(input + i), count));
@@ -2853,7 +2853,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.ShiftLeftLogical(Avx.LoadVector256(input + i), count));
@@ -2868,7 +2868,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftLeftLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.ShiftLeftLogical(Avx.LoadVector256(input + i), count));
@@ -2885,7 +2885,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -2898,7 +2898,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -2911,7 +2911,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -2924,7 +2924,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftLeftLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftLeftLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -2940,7 +2940,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogical(Avx.LoadVector256(input + i), count));
@@ -2955,7 +2955,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogical(Avx.LoadVector256(input + i), count));
@@ -2970,7 +2970,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftRightLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.ShiftRightLogical(Avx.LoadVector256(input + i), count));
@@ -2985,7 +2985,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftRightLogical(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x8; i += v256x8) Avx.Store(output + i, Avx2.ShiftRightLogical(Avx.LoadVector256(input + i), count));
@@ -3002,7 +3002,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -3015,7 +3015,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -3028,7 +3028,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -3041,7 +3041,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightLogicalVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightLogicalVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -3057,7 +3057,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx2.IsSupported) for (; i <= length - v256x2; i += v256x2) Avx.Store(output + i, Avx2.ShiftRightArithmetic(Avx.LoadVector256(input + i), count));
 
         if (Sse2.IsSupported) for (; i <= length - v128x2; i += v128x2) Sse2.Store(output + i, Sse2.ShiftRightArithmetic(Sse2.LoadVector128(input + i), count));
@@ -3070,7 +3070,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightArithmetic(Avx512F.LoadVector512(input + i), count));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightArithmetic(Avx.LoadVector256(input + i), count));
@@ -3085,7 +3085,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftRightArithmetic(Avx512F.LoadVector512(input + i), count));
 #endif
 
@@ -3098,7 +3098,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x4; i += v512x4) Avx512F.Store(output + i, Avx512F.ShiftRightArithmeticVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 
         if (Avx2.IsSupported) for (; i <= length - v256x4; i += v256x4) Avx.Store(output + i, Avx2.ShiftRightArithmeticVariable(Avx.LoadVector256(input + i), Avx.LoadVector256(counts + i)));
@@ -3111,7 +3111,7 @@ public static unsafe class Intrinsics
     {
         int i = 0;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         if (Avx512F.IsSupported) for (; i <= length - v512x8; i += v512x8) Avx512F.Store(output + i, Avx512F.ShiftRightArithmeticVariable(Avx512F.LoadVector512(input + i), Avx512F.LoadVector512(counts + i)));
 #endif
 

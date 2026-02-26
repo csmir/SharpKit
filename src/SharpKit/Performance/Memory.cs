@@ -29,7 +29,7 @@ public static unsafe class Memory
     public static void Copy(void* source, void* destination, nuint length) => NativeMemory.Copy(source, destination, length);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Fill(void* ptr, nuint count, byte value) => NativeMemory.Fill(ptr, count, value);
+    public static void Fill(void* ptr, nuint count, byte value) => NativeMemory.Fill(ptr, count, value);    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Free(void* ptr, bool aligned = false) { if (aligned) NativeMemory.AlignedFree(ptr); else NativeMemory.Free(ptr); }

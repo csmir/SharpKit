@@ -53,7 +53,7 @@ public static class EnumerableExtensions
 
             if (typeof(T).IsValueType)
             {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 foreach (T item in (ValueArray<T>)array) if (!predicate(item)) return false;
 #else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
@@ -82,7 +82,7 @@ public static class EnumerableExtensions
 
             if (typeof(T).IsValueType)
             {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 foreach (T item in (ValueArray<T>)array) if (predicate(item)) return true;
 #else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
@@ -112,7 +112,7 @@ public static class EnumerableExtensions
             int count = 0;
             if (typeof(T).IsValueType)
             {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 foreach (T item in (ValueArray<T>)array) if (predicate(item)) count++;
 #else
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);

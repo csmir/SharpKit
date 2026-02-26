@@ -1,4 +1,4 @@
-﻿#if NET8_0_OR_GREATER
+﻿#if NET6_0_OR_GREATER
 
 using static System.Runtime.InteropServices.MemoryMarshal;
 
