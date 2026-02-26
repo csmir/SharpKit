@@ -1,21 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup Label="Compilation Options">
-
-		<!-- Base Options -->
+	<PropertyGroup>
 		<TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
-
-		<!-- Analysis Options -->
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 		<NoWarn>CA1822;IDE0130;IDE0290;IDE0056;SYSLIB1045</NoWarn>
 		<IsAotCompatible Condition="'$(TargetFramework)' == 'net10'">true</IsAotCompatible>
-
-		<!-- Language Options -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
-		
+
+		<AssemblyVersion>1.0</AssemblyVersion>
+		<PackageVersion>1.0.0-alpha.1</PackageVersion> <!--\-alpha.1-->
+		<FileVersion>1.0.0.0</FileVersion>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<PackageId>SharpKit</PackageId>
+
+		<Authors>SharpKit contributors.</Authors>
+		<Title>SharpKit</Title>
+		<Description>A library for tooling customary to commonly used dotnet API's.</Description>
+		<PackageTags>tooling, console, aot, memory, system</PackageTags>
+		<NeutralLanguage>en-US</NeutralLanguage>
+
+		<PackageProjectUrl>https://github.com/csmir/SharpKit</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/csmir/SharpKit</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,7 +41,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="../.editorconfig" />
+		<None Include="..\..\.editorconfig" />
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 </Project>
