@@ -1,35 +1,39 @@
-﻿using System.Runtime.InteropServices;
-using SharpKit.Collections;
+﻿using SharpKit.Collections;
+using System.Runtime.InteropServices;
 
 namespace SharpKit;
 
-public static class EnumerableExtensions
+/// <summary>
+///     Extension methods for <see cref="Array"/>.
+/// </summary>
+public static class ArrayExtensions
 {
-    extension<T>(IEnumerable<T> source)
-    {
-        // Extending general LINQ operations.
-
-        public IEnumerable<T> ForEach<TImpl>(Action<T> action)
-        {
-            foreach (var item in source)
-                action(item);
-
-            return source;
-        }
-    }
-
     extension(Array array)
     {
-        public static void Push<T>(ref T[] arr, T item)
+        /// <summary>
+        ///     Mutates the provided array by including the provided item at the end of the array. This function is a short-hand of <see cref="Array.Resize{T}(ref T[], int)"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the array to push items to.</typeparam>
+        /// <param name="arr">The target array for this mutation. If this addition causes the array to grow out of bounds, the method throws.</param>
+        /// <param name="item">The item to be included into the array.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the array cannot resize to include the provided item.</exception>
+        public static void Include<T>(ref T[] arr, T item)
         {
             var i = arr.Length;
 
-            Array.Resize(ref arr, arr.Length + 1);
+            Array.Resize(ref arr, i + 1);
 
             arr[i] = item;
         }
 
-        public static void Push<T>(ref T[] arr, params T[] items)
+        /// <summary>
+        ///     Mutates the provided array by including the provided items at the end of the array. This function is a short-hand of <see cref="Array.Resize{T}(ref T[], int)"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the array to push items to.</typeparam>
+        /// <param name="arr">The target array for this mutation. If this addition causes the array to grow out of bounds, the method throws.</param>
+        /// <param name="items">The items to be included into the array.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the array cannot resize to include the provided items.</exception>
+        public static void Include<T>(ref T[] arr, params T[] items)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
@@ -102,7 +106,10 @@ public static class EnumerableExtensions
         }
 
         /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource})"/>
-        public int MxCount() => array.Length;
+        /// <remarks>
+        ///     Because of high size probability, this method returns a <see langword="long"/> instead of an <see langword="int"/> to (try to) avoid overflow exceptions.
+        /// </remarks>
+        public long MxCount() => array.LongLength;
 
         /// <inheritdoc cref="Enumerable.Count{TSource}(IEnumerable{TSource}, Func{TSource, bool})"/>
         public unsafe int MxCount<T>(Func<T, bool> predicate)
