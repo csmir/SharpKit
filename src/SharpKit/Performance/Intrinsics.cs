@@ -5,6 +5,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace SharpKit.Performance;
 
+#pragma warning disable CS1591
 public static unsafe class Intrinsics
 {
     private const int v512x1 = 64, v256x1 = 32, v128x1 = 08, v512x2 = 32, v256x2 = 16, v128x2 = 06, v512x4 = 16, v256x4 = 08, v128x4 = 04, v512x8 = 08, v256x8 = 04, v128x8 = 02;
@@ -3119,3 +3120,4 @@ public static unsafe class Intrinsics
     }
     #endregion
 }
+#pragma warning restore
