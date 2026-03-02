@@ -15,7 +15,7 @@ namespace SharpKit.Performance;
 public ref struct ValueStringBuilder : IDisposable
 {
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "GetRawStringData")]
-    internal static extern ref char GetRawStringData(string @this);
+    private static extern ref char GetRawStringData(string @this);
 
     #region Fields
 
@@ -58,7 +58,7 @@ public ref struct ValueStringBuilder : IDisposable
 
         if (length > 0)
         {
-            value.AsSpan(startIndex, length).CopyTo(_span);
+            FastCopy(value.AsSpan(startIndex, length), _span);
             _position = length;
         }
     }
@@ -178,7 +178,7 @@ public ref struct ValueStringBuilder : IDisposable
     [UnscopedRef]
     public ref Vsb Remove(int startIndex, int length)
     {
-        _span[(startIndex + length).._position].CopyTo(_span[startIndex..]);
+        FastCopy(_span[(startIndex + length).._position], _span[startIndex..]);
 
         _position -= length;
 
@@ -216,6 +216,11 @@ public ref struct ValueStringBuilder : IDisposable
 
     #region Internal Helpers
 
+    private readonly unsafe void FastCopy(ReadOnlySpan<char> source, Span<char> destination)
+    {
+        fixed (char* s = source, d = destination) Unsafe.CopyBlock(d, s, (uint)source.Length);
+    }
+
     /// <summary>
     ///     Grows the internal buffer to accommodate additional characters.
     /// </summary>
@@ -229,7 +234,7 @@ public ref struct ValueStringBuilder : IDisposable
 
         char[] newArray = ArrayPool<char>.Shared.Rent(newCapacity);
 
-        _span.CopyTo(newArray.AsSpan(0, _position));
+        FastCopy(_span, newArray.AsSpan(0, _position));
 
         if (_rentedArray != null)
             ArrayPool<char>.Shared.Return(_rentedArray);
@@ -264,7 +269,7 @@ public ref struct ValueStringBuilder : IDisposable
     /// <param name="destinationIndex"> The starting position in <paramref name="destination"/> where characters will be copied. The index is zero-based. </param>
     /// <param name="count"> The number of characters to be copied. </param>
 
-    public readonly void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) => _span[sourceIndex..].CopyTo(new(destination, destinationIndex, count));
+    public readonly void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) => FastCopy(_span[sourceIndex..], new(destination, destinationIndex, count));
 
     ///  <summary>
     ///     Copies the characters from a specified segment of this instance to a destination <see cref="char"/> span.
@@ -273,7 +278,7 @@ public ref struct ValueStringBuilder : IDisposable
     ///  <param name="destination"> The writable span where characters will be copied. </param>
     ///  <param name="count"> The number of characters to be copied. </param>
 
-    public readonly void CopyTo(int sourceIndex, Span<char> destination, int count) => _span.Slice(sourceIndex, count).CopyTo(destination);
+    public readonly void CopyTo(int sourceIndex, Span<char> destination, int count) => FastCopy(_span.Slice(sourceIndex, count), destination);
 
     #endregion
 
@@ -541,7 +546,7 @@ public ref struct ValueStringBuilder : IDisposable
 
         if (_position + length > _span.Length) Grow(length);
 
-        value.CopyTo(_span[_position..]);
+        FastCopy(value, _span[_position..]);
 
         _position += length;
 
@@ -754,7 +759,7 @@ public ref struct ValueStringBuilder : IDisposable
     {
         EnsureCapacity(_position + count);
 
-        _span[index.._position].CopyTo(_span[(index + count)..]);
+        FastCopy(_span[index.._position], _span[(index + count)..]);
 
         _position += count;
     }
@@ -787,7 +792,7 @@ public ref struct ValueStringBuilder : IDisposable
 
             Span<char> destination = _span.Slice(index, expansion);
 
-            for (int i = 0; i < count; i++) value.CopyTo(destination[(i * value.Length)..]);
+            for (int i = 0; i < count; i++) FastCopy(value, destination[(i * value.Length)..]);
         }
 
         return ref this;
@@ -968,7 +973,7 @@ public ref struct ValueStringBuilder : IDisposable
         {
             GrowAndShift(index, value.Length);
 
-            value.CopyTo(_span[index..]);
+            FastCopy(value, _span[index..]);
         }
 
         return ref this;
@@ -983,7 +988,7 @@ public ref struct ValueStringBuilder : IDisposable
         {
             GrowAndShift(index, charsWritten);
 
-            buffer.CopyTo(_span[index..]);
+            FastCopy(buffer, _span[index..]);
 
             return ref this;
         }
@@ -1054,7 +1059,7 @@ public ref struct ValueStringBuilder : IDisposable
                 end += difference;
             }
 
-            newValue.CopyTo(_span[absoluteIndex..]);
+            FastCopy(newValue, _span[absoluteIndex..]);
 
             position = absoluteIndex + newValue.Length;
         }
