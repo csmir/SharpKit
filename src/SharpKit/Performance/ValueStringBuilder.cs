@@ -196,7 +196,7 @@ public ref struct ValueStringBuilder : IDisposable
     ///     Only call at the end of the builder's lifetime, as it will no longer be usable after this call.
     /// </summary>
     /// <returns> The string representation of the builder's contents. </returns>
-    public override readonly string ToString() => _span[.._position].ToString();
+    public override readonly string ToString() => new(_span[.._position]); // This moves directly to a runtime-internal call
 
     /// <summary>
     ///     Creates a string from a substring of this builder.
