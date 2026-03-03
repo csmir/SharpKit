@@ -8,6 +8,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
+		<RootNamespace>Nimble</RootNamespace>
 
 		<AssemblyVersion>1.0</AssemblyVersion>
 		<PackageVersion>1.0.0-alpha.1</PackageVersion> <!--\-alpha.1-->
@@ -16,11 +17,11 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-		<PackageId>SharpKit</PackageId>
+		<PackageId>dotnimble</PackageId>
 
-		<Authors>SharpKit contributors.</Authors>
-		<Title>SharpKit</Title>
-		<Description>A library for tooling customary to commonly used dotnet API's.</Description>
+		<Authors>dotnimble contributors.</Authors>
+		<Title>dotnimble</Title>
+		<Description>Extends, improves and reimplements commonly used dotnet API's.</Description>
 		<PackageTags>tooling, console, aot, memory, system</PackageTags>
 		<NeutralLanguage>en-US</NeutralLanguage>
 

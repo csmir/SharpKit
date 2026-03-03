@@ -1,4 +1,4 @@
-﻿namespace SharpKit.Collections;
+﻿namespace Nimble.Collections;
 
 /// <summary>
 ///     Represents an implementation of <see cref="Grouping{TKey, TValue}"/> with list-based mutability.

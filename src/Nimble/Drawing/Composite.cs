@@ -2,50 +2,24 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace SharpKit.Drawing;
-
-[StructLayout(LayoutKind.Sequential)]
-internal struct SystemColor
-{
-    /// <summary>
-    ///     string? System.Drawing.Color.name. Because its a string, it can be set to 0 in an nint to fit in the same memory.
-    /// </summary>
-    //[FieldOffset(0)]
-    public nint Name;
-
-    /// <summary>
-    ///     long? System.Drawing.Color.value. This is the value that has equality to Colr.Value.
-    /// </summary>
-    //[FieldOffset(8)]
-    public long Value;
-
-    /// <summary>
-    ///     short System.Drawing.Color.knownColor, but it can be set to 0 in a short to fit in the same memory.
-    /// </summary>
-    //[FieldOffset(16)]
-    public short KnownColor;
-
-    /// <summary>
-    ///     short System.Drawing.Color.state. This is the value that has to be set to 0x0002 for the Color to be valid when using the Value field.
-    /// </summary>
-    //[FieldOffset(18)]
-    public short State;
-}
+namespace Nimble.Drawing;
 
 /// <summary>
-///     An sRGB color representation that uses a 32-bit unsigned integer to store the RGBA (red, green, blue, alpha) colour channels.
+///     An sRGB scientific representation that uses a 32-bit unsigned integer to store the RGBA (red, green, blue, alpha) colour channels.
 /// </summary>
 /// <remarks>
-///     Create a new Colr from ARGB uint representation of the color. Other color formats are accepted using static FromX methods.
+///     Create a new <see cref="Composite"/> from sRGB uint representation of the color. Other color formats are accepted using static FromX methods.
 /// </remarks>
 [StructLayout(LayoutKind.Explicit)]
 [DebuggerDisplay("R = {R}, G = {G}, B = {B}, A = {A}")]
-public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composite>, ICloneable
+public unsafe readonly partial struct Composite : IEquatable<Color>, IEquatable<Composite>, IComparable<Composite>, ICloneable
 {
+    #region Constants
+    
     const float
-    REC_709_R = 0.2126f,
-    REC_709_G = 0.7152f,
-    REC_709_B = 0.0722f;
+        REC_709_R = 0.2126f,
+        REC_709_G = 0.7152f,
+        REC_709_B = 0.0722f;
 
     const float
         BT_601_R = 0.299f,
@@ -77,6 +51,41 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     const int
         CFACTOR = 8,
         MAX_DEGREES = 360;
+
+    #endregion
+
+#if NET6_0_OR_GREATER
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "Value")]
+    private static extern ref long GetValue(Color @this);
+#endif
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SystemColor
+    {
+        /// <summary>
+        ///     string? System.Drawing.Color.name. Because its a string, it can be set to 0 in an nint to fit in the same memory.
+        /// </summary>
+        //[FieldOffset(0)]
+        public nint Name;
+
+        /// <summary>
+        ///     long? System.Drawing.Color.value. This is the value that has equality to Colr.Value.
+        /// </summary>
+        //[FieldOffset(8)]
+        public long Value;
+
+        /// <summary>
+        ///     short System.Drawing.Color.knownColor, but it can be set to 0 in a short to fit in the same memory.
+        /// </summary>
+        //[FieldOffset(16)]
+        public short KnownColor;
+
+        /// <summary>
+        ///     short System.Drawing.Color.state. This is the value that has to be set to 0x0002 for the Color to be valid when using the Value field.
+        /// </summary>
+        //[FieldOffset(18)]
+        public short State;
+    }
 
     /// <summary>
     ///     The 32-bit unsigned integer representation of the colour.
@@ -451,12 +460,12 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     }
 
     /// <summary>
-    ///     Gets a composite index based on the provided index type for algorithmic sorting.
+    ///     Gets a composite index based on the provided index type for perceptual algorithmic sorting.
     /// </summary>
     /// <param name="indexType">The type of index to generate for this value.</param>
     /// <returns>A value representing a floating point (composite) index for the current value produced according to <paramref name="indexType"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided type is not a named value of <see cref="CompositeIndex"/>.</exception>
-    public double GetCompositeIndex(CompositeIndex indexType)
+    public double GetIndex(CompositeIndex indexType)
     {
         return indexType switch
         {
@@ -611,8 +620,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="amount"/> is less than -360 or more than 360.</exception>
     public Composite ShiftHue(float amount)
     {
-        if (amount < -MAX_DEGREES || amount > MAX_DEGREES)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be between -360 and 360.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(amount, -MAX_DEGREES, MAX_DEGREES, nameof(amount));
 
         var hsla = GetHSLA();
 
@@ -634,8 +642,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is less than -360 or more than 360.</exception>
     public Composite SetHue(float value)
     {
-        if (value < -MAX_DEGREES || value > MAX_DEGREES)
-            throw new ArgumentOutOfRangeException(nameof(value), "Value must be between -360 and 360.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(value, -MAX_DEGREES, MAX_DEGREES, nameof(value));
 
         var hsla = GetHSLA();
 
@@ -657,8 +664,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="amount"/> is less than -1 or more than 1.</exception>
     public Composite ShiftSaturation(float amount)
     {
-        if (amount < -1f || amount > 1f)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be between -1 and 1.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(amount, -1f, 1f, nameof(amount));
 
         var hsla = GetHSLA();
         hsla.S = (hsla.S + amount) % 1f;
@@ -679,8 +685,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is less than -1 or more than 1.</exception>
     public Composite SetSaturation(float value)
     {
-        if (value < -1f || value > 1f)
-            throw new ArgumentOutOfRangeException(nameof(value), "Value must be between -1 and 1.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(value, -1f, 1f, nameof(value));
 
         var hsla = GetHSLA();
         hsla.S = value % 1f;
@@ -701,8 +706,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="amount"/> is less than -1 or more than 1.</exception>
     public Composite ShiftBrightness(float amount)
     {
-        if (amount < -1f || amount > 1f)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be between -1 and 1.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(amount, -1f, 1f, nameof(amount));
 
         var hsla = GetHSLA();
         hsla.L = (hsla.L + amount) % 1f;
@@ -723,8 +727,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="value"/> is less than -1 or more than 1.</exception>
     public Composite SetBrightness(float value)
     {
-        if (value < -1f || value > 1f)
-            throw new ArgumentOutOfRangeException(nameof(value), "Value must be between -1 and 1.");
+        ArgumentOutOfRangeException.ThrowIfOutOfRange(value, -1f, 1f, nameof(value));
 
         var hsla = GetHSLA();
         hsla.L = value % 1f;
@@ -779,6 +782,18 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// <returns><see langword="true"/> if the other value equals the current value; otherwise <see langword="false"/>.</returns>
     public bool Equals(Color other)
         => other.R == R && other.G == G && other.B == B && other.A == A;
+
+    /// <summary>
+    ///     Compares the current value to another <see cref="Composite"/> value by comparing their inner <see cref="Value"/>.
+    /// </summary>
+    /// <remarks>
+    ///     To sort colors based on perceptual attributes rather than their raw sRGB values, 
+    ///     consider using <see cref="GetIndex(CompositeIndex)"/> with a suitable index type to generate a perceptually meaningful index for sorting.
+    /// </remarks>
+    /// <param name="other">The other value to compare to.</param>
+    /// <returns>Less than zero if the current instance is less than <paramref name="other"/>. Zero if they are equal. More than zero if the current instance is more than <paramref name="other"/>.</returns>
+    public int CompareTo(Composite other)
+        => Value.CompareTo(other.Value);
 
     /// <summary>
     ///     Gets the hash code for the current value by returning the hash code of the inner <see cref="Value"/>.
@@ -849,61 +864,7 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
 
     object ICloneable.Clone()
         => new Composite(Value);
-
-    /// <summary>
-    ///     Creates a new <see cref="Composite"/> from the specified red, green, blue, and alpha values.
-    /// </summary>
-    /// <param name="r">The red channel to create this color from.</param>
-    /// <param name="g">The green channel to create this color from.</param>
-    /// <param name="b">The blue channel to create this color from.</param>
-    /// <param name="a">The alpha channel to create this color from. This parameter is optional and defaults to 255 (fully opaque) if not provided.</param>
-    /// <returns>A new <see cref="Composite"/> value from the provided values.</returns>
-    public static Composite FromRGB(byte r, byte g, byte b, byte a = byte.MaxValue)
-        => new(r, g, b, a);
-
-    /// <summary>
-    ///     Creates a new <see cref="Composite"/> from the specified hue, saturation, and value (brightness) components.
-    /// </summary>
-    /// <param name="h">The hue to create this color from, in a range between 0 and 360 degrees.</param>
-    /// <param name="s">The saturation to create this color from, in a range between 0 and 1.</param>
-    /// <param name="v">The value (brightness) to create this color from, in a range between 0 and 1.</param>
-    /// <returns>A new <see cref="Composite"/> value from the provided values.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when any of the provided values are less than, or more than the accepted range.</exception>
-    public static Composite FromHSV(float h, float s, float v)
-    {
-        if (h < 0f || h > MAX_DEGREES)
-            throw new ArgumentOutOfRangeException(nameof(h), "Hue value must be between 0 and 360.");
-        if (s < 0f || s > 1f)
-            throw new ArgumentOutOfRangeException(nameof(s), "Saturation value must be between 0 and 1.");
-        if (v < 0f || v > 1f)
-            throw new ArgumentOutOfRangeException(nameof(v), "Value (brightness) must be between 0 and 1.");
-
-        return new(h, s, v);
-    }
-
-    /// <summary>
-    ///     Creates a new <see cref="Composite"/> from the specified hue, saturation, lightness, and alpha components.
-    /// </summary>
-    /// <param name="h">The hue to create this color from, in a range between 0 and 360 degrees.</param>
-    /// <param name="s">The saturation to create this color from, in a range between 0 and 1.</param>
-    /// <param name="l">The lightness to create this color from, in a range between 0 and 1.</param>
-    /// <param name="a">The alpha to create this color from, in a range between 0 and 1. This parameter is optional and defaults to 1 (fully opaque) if not provided.</param>
-    /// <returns>A new <see cref="Composite"/> value from the provided values.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when any of the provided values are less than, or more than the accepted range.</exception>
-    public static Composite FromHSL(float h, float s, float l, float a = 1f)
-    {
-        if (h < 0f || h > MAX_DEGREES)
-            throw new ArgumentOutOfRangeException(nameof(h), "Hue value must be between 0 and 360.");
-        if (s < 0f || s > 1f)
-            throw new ArgumentOutOfRangeException(nameof(s), "Saturation value must be between 0 and 1.");
-        if (l < 0f || l > 1f)
-            throw new ArgumentOutOfRangeException(nameof(l), "Lightness value must be between 0 and 1.");
-        if (a < 0f || a > 1f)
-            throw new ArgumentOutOfRangeException(nameof(a), "Alpha value must be between 0 and 1.");
-
-        return new(h, s, l, a);
-    }
-
+    
     #region Optimization
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1152,26 +1113,4 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
     /// </summary>
     public static implicit operator Composite(uint rgba)
         => new(rgba);
-}
-
-/// <summary>
-///     Provides extension methods for the composite structure.
-/// </summary>
-public static class CompositeExtensions
-{
-    private readonly static Func<object?, object> _getValueInvoker = typeof(Color)
-        .GetProperty("Value", BindingFlags.NonPublic | BindingFlags.Instance)!
-        .GetValue!;
-
-    /// <summary>
-    ///     Converts the specified Color structure to a <see cref="Composite"/> instance.
-    /// </summary>
-    /// <param name="color">The Color structure to convert.</param>
-    /// <returns>A <see cref="Composite"/> instance that represents the specified Color.</returns>
-    public static Composite GetComposite(this Color color)
-    {
-        var uintColorValue = unchecked((uint)(long)_getValueInvoker(color));
-
-        return new Composite(uintColorValue);
-    }
 }

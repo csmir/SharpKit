@@ -1,4 +1,4 @@
-﻿namespace SharpKit.Collections;
+﻿namespace Nimble.Collections;
 
 /// <summary>
 ///     An implementation of <see cref="IGrouping{TKey, TElement}"/> that can be used for key-driven collections outside of emitting through LINQ.

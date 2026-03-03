@@ -1,4 +1,4 @@
-﻿namespace SharpKit.Drawing;
+﻿namespace Nimble.Drawing;
 
 /// <summary>
 ///     Generates an independent composite index based on the color's active space (sRGB value).

@@ -1,4 +1,4 @@
-﻿namespace SharpKit;
+﻿namespace System;
 
 /// <summary>
 ///     Represents an implementation of <see cref="IServiceProvider"/> that does not serve any services. 

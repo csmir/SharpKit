@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace SharpKit.Console;
+namespace Nimble.Console;
 
 /// <summary>
 ///     Provides Virtual Terminal sequences as defined by the VT100 standard.

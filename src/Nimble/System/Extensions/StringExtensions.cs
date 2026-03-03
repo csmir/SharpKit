@@ -1,9 +1,9 @@
 ﻿using System.Text;
 
-namespace SharpKit;
+namespace System;
 
 /// <summary>
-///     Extensions for the <see cref="string"/> primitive type.
+///     Provides extensions for the <see cref="string"/> primitive type.
 /// </summary>
 public static class StringExtensions
 {
@@ -36,7 +36,6 @@ public static class StringExtensions
 #else
                         str = string.Join(" ", range.Skip(range.Length - i));
 #endif
-
                     str += finalizer;
                 }
 

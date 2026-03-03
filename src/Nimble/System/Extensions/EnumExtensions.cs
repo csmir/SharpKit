@@ -1,7 +1,7 @@
-﻿namespace SharpKit;
+﻿namespace System;
 
 /// <summary>
-///     Represents extensions for the <see cref="Enum"/> primitive type.
+///     Provides extensions for the <see cref="Enum"/> primitive type.
 /// </summary>
 public static class EnumExtensions
 {

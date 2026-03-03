@@ -1,8 +1,8 @@
 ﻿#if NET6_0_OR_GREATER
 
-using static System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.InteropServices;
 
-namespace SharpKit.Collections;
+namespace Nimble.Collections;
 
 /// <summary>
 ///     An array that represents <typeparamref name="T"/> as values inside the array.
@@ -26,7 +26,7 @@ public class ValueArray<T>(Array array) : IEnumerable<T>
         private readonly int _length = array.Length;
         private int i = -1;
 
-        public T Current => CreateSpan(ref Unsafe.As<byte, T>(ref GetArrayDataReference(array)), _length)[i];
+        public T Current => MemoryMarshal.CreateSpan(ref Unsafe.As<byte, T>(ref MemoryMarshal.GetArrayDataReference(array)), _length)[i];
         
         object IEnumerator.Current => Current!;
 

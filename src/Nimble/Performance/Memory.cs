@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace SharpKit.Performance;
+namespace Nimble.Performance;
 
 /// <summary>
 /// This class contains methods for native memory management, in a framework-agnostic manner.

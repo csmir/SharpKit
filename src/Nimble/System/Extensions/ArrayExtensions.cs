@@ -1,7 +1,7 @@
-﻿using SharpKit.Collections;
+﻿using Nimble.Collections;
 using System.Runtime.InteropServices;
 
-namespace SharpKit;
+namespace System;
 
 /// <summary>
 ///     Extension methods for <see cref="Array"/>.

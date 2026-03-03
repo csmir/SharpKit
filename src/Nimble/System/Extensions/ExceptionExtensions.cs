@@ -1,4 +1,4 @@
-﻿namespace SharpKit;
+﻿namespace System;
 
 /// <summary>
 ///     Extension methods for <see cref="Exception"/>.
@@ -7,6 +7,32 @@ public static class ExceptionExtensions
 {
     extension(ArgumentException ex)
     {
+        /// <summary>
+        ///     Throws when the provided value is <see langword="null"/> or empty. Empty represents a collection or enumerable with an element count of 0.
+        /// </summary>
+        /// <remarks>
+        ///     This function retrieves the enumerator of non-collection enumerables to determine whether the enumerable is empty. If this enumerable can only be evaluated once, this method may cause side effects.
+        /// </remarks>
+        /// <param name="value">The collection to check on whether it is <see langword="null"/> or has no elements.</param>
+        /// <param name="argumentExpression">The argument name to compare against. In newer .NET version this property is acknowledged using codeanalysis attributes.</param>
+        /// <exception cref="ArgumentException">Thrown when the provided collection is <see langword="null"/> or has no elements.</exception>
+        public static void ThrowIfNullOrEmpty(IEnumerable? value,
+#if NET6_0_OR_GREATER
+            [CallerArgumentExpression(nameof(value))]
+#endif
+            string? argumentExpression = null)
+        {
+            ArgumentNullException.ThrowIfNull(value, argumentExpression!);
+
+            if (value is ICollection collection)
+            {
+                if (collection.Count == 0)
+                    throw new ArgumentException($"Argument '{argumentExpression}' cannot be empty.", argumentExpression);
+            }
+            else if (value?.GetEnumerator()?.MoveNext() == false)
+                throw new ArgumentException($"Argument '{argumentExpression}' cannot be empty.", argumentExpression);
+        }
+
         // Polyfill for .NET versions prior to .NET 6.0
 #if !NET6_0_OR_GREATER
         /// <summary>
@@ -33,32 +59,6 @@ public static class ExceptionExtensions
                 throw new ArgumentException($"Argument '{argumentExpression}' cannot be null, empty, or consist only of white-space characters.", argumentExpression);
         }
 #endif
-
-        /// <summary>
-        ///     Throws when the provided value is <see langword="null"/> or empty. Empty represents a collection or enumerable with an element count of 0.
-        /// </summary>
-        /// <remarks>
-        ///     This function retrieves the enumerator of non-collection enumerables to determine whether the enumerable is empty. If this enumerable can only be evaluated once, this method may cause side effects.
-        /// </remarks>
-        /// <param name="value">The collection to check on whether it is <see langword="null"/> or has no elements.</param>
-        /// <param name="argumentExpression">The argument name to compare against. In newer .NET version this property is acknowledged using codeanalysis attributes.</param>
-        /// <exception cref="ArgumentException">Thrown when the provided collection is <see langword="null"/> or has no elements.</exception>
-        public static void ThrowIfNullOrEmpty(IEnumerable? value,
-#if NET6_0_OR_GREATER
-            [CallerArgumentExpression(nameof(value))]
-#endif
-            string? argumentExpression = null)
-        {
-            ArgumentNullException.ThrowIfNull(value, argumentExpression!);
-
-            if (value is ICollection collection)
-            {
-                if (collection.Count == 0)
-                    throw new ArgumentException($"Argument '{argumentExpression}' cannot be empty.", argumentExpression);
-            }
-            else if (value?.GetEnumerator()?.MoveNext() == false)
-                throw new ArgumentException($"Argument '{argumentExpression}' cannot be empty.", argumentExpression);
-        }
     }
 
     extension(ArgumentNullException ex)
@@ -81,8 +81,6 @@ public static class ExceptionExtensions
 
     extension(ArgumentOutOfRangeException ex)
     {
-        // Polyfill for .NET versions prior to .NET 6.0
-#if !NET6_0_OR_GREATER
         /// <summary>
         ///     Throws when the provided value is less than the specified minimum value or greater than the specified maximum value.
         /// </summary>
@@ -91,12 +89,19 @@ public static class ExceptionExtensions
         /// <param name="maxValue">The exclusive maximum value to compare against.</param>
         /// <param name="argumentExpression">The argument name to compare against. In newer .NET version this property is acknowledged using codeanalysis attributes.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the provided value is equal to/more than the maximum value, or equal to/less than the minimum value.</exception>
-        public static void ThrowIfOutOfRange<T>(T value, T minValue, T maxValue, string? argumentExpression = null)
+        public static void ThrowIfOutOfRange<T>(T value, T minValue, T maxValue,
+#if NET6_0_OR_GREATER
+            [CallerArgumentExpression(nameof(value))]
+#endif
+            string? argumentExpression = null)
             where T : struct, IComparable<T>
         {
             if (value.CompareTo(minValue) < 0 || value.CompareTo(maxValue) > 0)
                 throw new ArgumentOutOfRangeException(argumentExpression, value, $"Argument '{argumentExpression}' must be between {minValue} and {maxValue}.");
         }
+
+        // Polyfill for .NET versions prior to .NET 6.0
+#if !NET6_0_OR_GREATER
 
         /// <summary>
         ///     Throws when the provided value is less than zero.

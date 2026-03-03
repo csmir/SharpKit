@@ -4,9 +4,9 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Vsb = SharpKit.Performance.ValueStringBuilder;
+using Vsb = Nimble.Performance.ValueStringBuilder;
 
-namespace SharpKit.Performance;
+namespace Nimble.Performance;
 
 /// <summary>
 ///     A cheaper alternative to <see cref="System.Text.StringBuilder"/>, with a <see langword="stackalloc"/>-compatible backing store.

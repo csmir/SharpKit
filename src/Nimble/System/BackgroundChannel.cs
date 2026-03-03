@@ -1,9 +1,8 @@
 ﻿#if NET6_0_OR_GREATER
 
 using System.ComponentModel;
-using System.Threading.Channels;
 
-namespace SharpKit;
+namespace System.Threading.Channels;
 
 /// <summary>
 ///     A background channel that processes incoming values from any source thread or task on one background task.

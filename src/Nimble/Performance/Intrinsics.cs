@@ -3,7 +3,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif
 
-namespace SharpKit.Performance;
+namespace Nimble.Performance;
 
 #pragma warning disable CS1591
 public static unsafe class Intrinsics

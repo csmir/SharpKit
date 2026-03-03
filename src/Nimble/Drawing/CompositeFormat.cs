@@ -1,4 +1,4 @@
-﻿namespace SharpKit.Drawing;
+﻿namespace Nimble.Drawing;
 
 /// <summary>
 ///     Represents all color formats supported by Coloris.
