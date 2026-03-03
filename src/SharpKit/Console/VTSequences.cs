@@ -2,10 +2,13 @@
 
 namespace SharpKit.Console;
 
+/// <summary>
+///     Provides Virtual Terminal sequences as defined by the VT100 standard.
+/// </summary>
 public static class VTSequences
 {
     /// <summary>
-    /// Commands in this section are responsible for the console's buffer, and modifying its attributes.
+    ///     Commands in this section are responsible for the console's buffer, and modifying its attributes.
     /// </summary>
     public static class Buffer
     {
@@ -220,12 +223,12 @@ public static class VTSequences
             public const string DisableBlinking = "\e[?12l";
 
             /// <summary>
-            ///     <c>DECTCEM</c> - Show the cursor. Equivalent to setting <see cref="Console.CursorVisible"/> to <see langword="true"/>.
+            ///     <c>DECTCEM</c> - Show the cursor. Equivalent to setting <see cref="System.Console.CursorVisible"/> to <see langword="true"/>.
             /// </summary>
             public const string SetModeShow = "\e[?25h";
 
             /// <summary>
-            ///     <c>DECTCEM</c> - Hide the cursor. Equivalent to setting <see cref="Console.CursorVisible"/> to <see langword="false"/>.
+            ///     <c>DECTCEM</c> - Hide the cursor. Equivalent to setting <see cref="System.Console.CursorVisible"/> to <see langword="false"/>.
             /// </summary>
             public const string SetModeHide = "\e[?12l";
         }

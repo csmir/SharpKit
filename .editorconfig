@@ -51,6 +51,10 @@ csharp_style_prefer_pattern_matching = true:silent
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
+
+# CS8500: This takes the address of, gets the size of, or declares a pointer to a managed type
+dotnet_diagnostic.CS8500.severity = silent
+
 [*.{cs,vb}]
 #### Naming styles ####
 
