@@ -773,11 +773,11 @@ public unsafe readonly struct Composite : IEquatable<Color>, IEquatable<Composit
         => other.Value == Value;
 
     /// <summary>
-    ///     Checks equality to another <see cref="System.Drawing.Color"/> value by comparing the R, G, B and A channels.
+    ///     Checks equality to another <see cref="Color"/> value by comparing the R, G, B and A channels.
     /// </summary>
     /// <param name="other"></param>
     /// <returns><see langword="true"/> if the other value equals the current value; otherwise <see langword="false"/>.</returns>
-    public bool Equals(System.Drawing.Color other)
+    public bool Equals(Color other)
         => other.R == R && other.G == G && other.B == B && other.A == A;
 
     /// <summary>
