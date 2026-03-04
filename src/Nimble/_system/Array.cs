@@ -1,4 +1,4 @@
-﻿using Nimble.Collections;
+﻿using Nimble.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System;

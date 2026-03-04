@@ -1,4 +1,4 @@
-﻿namespace Nimble.Collections;
+﻿namespace Nimble.Collections.Generic;
 
 /// <summary>
 ///     Represents an implementation of <see cref="Grouping{TKey, TValue}"/> with list-based mutability.

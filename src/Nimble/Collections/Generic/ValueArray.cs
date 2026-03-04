@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Nimble.Collections;
+namespace Nimble.Collections.Generic;
 
 /// <summary>
 ///     An array that represents <typeparamref name="T"/> as values inside the array.

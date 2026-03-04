@@ -4,9 +4,9 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Vsb = Nimble.Performance.ValueStringBuilder;
+using Vsb = Nimble.Text.ValueStringBuilder;
 
-namespace Nimble.Performance;
+namespace Nimble.Text;
 
 /// <summary>
 ///     A cheaper alternative to <see cref="System.Text.StringBuilder"/>, with a <see langword="stackalloc"/>-compatible backing store.

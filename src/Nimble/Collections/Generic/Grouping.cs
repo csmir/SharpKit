@@ -1,4 +1,4 @@
-﻿namespace Nimble.Collections;
+﻿namespace Nimble.Collections.Generic;
 
 /// <summary>
 ///     An implementation of <see cref="IGrouping{TKey, TElement}"/> that can be used for key-driven collections outside of emitting through LINQ.

@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Nimble.Performance;
+namespace Nimble.Runtime;
 
 /// <summary>
 /// This class contains methods for native memory management, in a framework-agnostic manner.

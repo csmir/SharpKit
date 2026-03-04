@@ -1,18 +1,16 @@
-﻿using Nimble.Performance;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace System;
 
 /// <summary>
 ///     Extensions for <see cref="TimeSpan"/>
 /// </summary>
-public static class TimespanExtensions
+public static class TimeSpanExtensions
 {
     private static readonly Dictionary<string, Func<string, TimeSpan>> _callback;
     private static readonly Regex _timeRegex;
 
-    static TimespanExtensions()
+    static TimeSpanExtensions()
     {
         _timeRegex = new Regex(@"(\d+)\s*([a-zA-Z]+)\s*(?:and|,)?\s*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -110,9 +108,9 @@ public static class TimespanExtensions
         public string ToFormattedString()
         {
 #if NET6_0_OR_GREATER
-            var sb = new ValueStringBuilder(stackalloc char[64]);
+            var sb = new Nimble.Text.ValueStringBuilder(stackalloc char[64]);
 #else
-            var sb = new StringBuilder();
+            var sb = new System.Text.StringBuilder();
 #endif
 
             if (span.Days > 0)
