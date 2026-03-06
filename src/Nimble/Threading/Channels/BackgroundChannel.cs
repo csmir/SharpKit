@@ -62,19 +62,38 @@ public abstract class BackgroundChannel<TValue> : IBackgroundChannel<TValue>, ID
         ObjectDisposedException.ThrowIf(_disposed, typeof(BackgroundChannel<TValue>));
         ArgumentNullException.ThrowIfNull(value);
 
-        return _channel.Writer.TryWrite(value);
+        return TryWriteInner(value);
     }
 
     /// <inheritdoc />
     /// <exception cref="ObjectDisposedException" />
     /// <exception cref="ArgumentNullException" />
-    public ValueTask WriteAsync(TValue value, CancellationToken cancellationToken = default)
+    public async ValueTask<bool> WriteAsync(TValue value, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, typeof(BackgroundChannel<TValue>));
         ArgumentNullException.ThrowIfNull(value);
 
-        return _channel.Writer.WriteAsync(value, cancellationToken);
+        try
+        {
+            while (await _channel.Writer.WaitToWriteAsync(cancellationToken))
+                return TryWriteInner(value);
+        }
+        catch (ChannelClosedException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            throw new ChannelClosedException(ex);
+        }
+        // Swallow OperationCanceledException as it is expected when a cancellationtoken is canceled, and return false to indicate the write operation was not successful.
+        catch (OperationCanceledException) { }
+
+        return false;
     }
+
+    private bool TryWriteInner(TValue value)
+        => _channel.Writer.TryWrite(value);
 
     /// <inheritdoc />
     /// <exception cref="ObjectDisposedException" />
@@ -98,15 +117,18 @@ public abstract class BackgroundChannel<TValue> : IBackgroundChannel<TValue>, ID
             try
             {
                 while (await _channel.Reader.WaitToReadAsync(linked.Token))
-                {
                     while (_channel.Reader.TryRead(out var value))
+                    {
                         await ProcessAsync(value, linked.Token);
-                }
+                    }
             }
-            catch (OperationCanceledException)
+            // The thrown exception is not because of the cancellation of the background task, but because of a fault in the processing logic.
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // Ignore cancellation exceptions. We'll just exit the loop and end the task.
+                _channel.Writer.TryComplete(ex);
             }
+            // Swallow OperationCanceledException as it is expected when a cancellationtoken is canceled, and just exit the loop to end the background task.
+            catch (OperationCanceledException) { }
 
         }, linked.Token);
 
@@ -124,6 +146,7 @@ public abstract class BackgroundChannel<TValue> : IBackgroundChannel<TValue>, ID
     {
         ObjectDisposedException.ThrowIf(_disposed, typeof(BackgroundChannel<TValue>));
 
+        // If the cancellation source is already canceled or null, it means the channel is already stopped, so we can just return.
         if (_cancellationSource == null || _cancellationSource.IsCancellationRequested)
             return ValueTask.CompletedTask;
 
@@ -131,7 +154,14 @@ public abstract class BackgroundChannel<TValue> : IBackgroundChannel<TValue>, ID
 
         _cancellationSource.Cancel();
 
-        _runnerTask?.Wait(cancellationToken);
+        try
+        {
+            _runnerTask?.Wait(cancellationToken);
+        }
+        catch (AggregateException ex) when (ex.InnerException != null)
+        {
+            throw ex.InnerException;
+        }
 
         return ValueTask.CompletedTask;
     }

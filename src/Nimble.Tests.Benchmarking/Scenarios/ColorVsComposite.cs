@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace Nimble.Tests.Benchmarking.Scenarios;
 
-[DisassemblyDiagnoser]
 [MemoryDiagnoser]
+[DisassemblyDiagnoser]
 public class ColorVsComposite
 {
     [Benchmark]
