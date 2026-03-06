@@ -5,17 +5,6 @@ namespace Nimble.Drawing;
 public readonly partial struct Composite
 {
     /// <summary>
-    ///     Creates a new <see cref="Composite"/> from the specified red, green, blue, and alpha values.
-    /// </summary>
-    /// <param name="r">The red channel to create this color from.</param>
-    /// <param name="g">The green channel to create this color from.</param>
-    /// <param name="b">The blue channel to create this color from.</param>
-    /// <param name="a">The alpha channel to create this color from. This parameter is optional and defaults to 255 (fully opaque) if not provided.</param>
-    /// <returns>A new <see cref="Composite"/> value from the provided values.</returns>
-    public static Composite FromRGB(byte r, byte g, byte b, byte a = byte.MaxValue)
-        => new(r, g, b, a);
-
-    /// <summary>
     ///     Creates a new <see cref="Composite"/> from the specified hue, saturation, and value (brightness) components.
     /// </summary>
     /// <param name="h">The hue to create this color from, in a range between 0 and 360 degrees.</param>

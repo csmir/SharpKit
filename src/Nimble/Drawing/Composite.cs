@@ -136,15 +136,22 @@ public unsafe readonly partial struct Composite : IEquatable<Color>, IEquatable<
     public Composite(uint argb)
         => Value = argb;
 
-    #region Internal Constructors
-
-    private Composite(byte r, byte g, byte b, byte a = byte.MaxValue)
+    /// <summary>
+    ///     Creates a new <see cref="Composite"/> value based on the provided sRGB (A) channels.
+    /// </summary>
+    /// <param name="r">The red channel.</param>
+    /// <param name="g">The green channel.</param>
+    /// <param name="b">The blue channel.</param>
+    /// <param name="a">The (optional) alpha channel.</param>
+    public Composite(byte r, byte g, byte b, byte a = byte.MaxValue)
     {
         A = a;
         R = r;
         G = g;
         B = b;
     }
+
+    #region Internal Constructors
 
     private Composite(float h, float s, float v)
     {

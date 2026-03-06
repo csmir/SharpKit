@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="src/Nimble.Tests.Benchmarking/Nimble.Tests.Benchmarking.csproj" Id="6840ce0c-eddc-4a9c-8f19-dfd9e85996f3" />
   <Project Path="src/Nimble/Nimble.csproj" />
 </Solution>
